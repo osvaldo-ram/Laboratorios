@@ -1,0 +1,21 @@
+body{
+    font-family: "Helvetica", "Arial", sans-serif;
+}
+
+li {
+    color: darkgray;
+}
+
+.tanques {
+    color: red;
+}
+
+#vi {
+    font-size: large;
+
+}
+
+.tanque:hover {
+    font-size: large;
+    color: black;
+}
