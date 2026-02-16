@@ -1,0 +1,158 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 4 - JavaScript</title>
+  <style>
+    :root {
+      --bg: #f7f4ef;
+      --card: #ffffff;
+      --ink: #1f2937;
+      --accent: #0f766e;
+      --muted: #6b7280;
+      --line: #d1d5db;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: linear-gradient(160deg, #f7f4ef 0%, #edf7f5 100%);
+      color: var(--ink);
+    }
+
+    h1, h2 {
+      margin-top: 0;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+    }
+
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button:hover {
+      filter: brightness(0.95);
+    }
+
+    pre {
+      background: #111827;
+      color: #e5e7eb;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      min-height: 70px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background: #f3f4f6;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .qa p {
+      margin: 0 0 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lab 4 - Scripts de JavaScript</h1>
+  <p class="muted">Abre la consola del navegador para ver los <code>console.assert()</code>.</p>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Problema 1</h2>
+      <p>Tabla del 1 a n con cuadrados y cubos (usando <code>document.write</code>).</p>
+      <button id="btnProblema1">Ejecutar problema 1</button>
+      <p class="muted">Nota: este ejercicio reemplaza el documento al ejecutar <code>document.write</code>.</p>
+    </section>
+
+    <section class="card">
+      <h2>Problema 2</h2>
+      <p>Suma aleatoria con verificación y tiempo de respuesta.</p>
+      <button id="btnProblema2">Ejecutar problema 2</button>
+      <pre id="outProblema2"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Problemas 3, 4 y 5</h2>
+      <p>Funciones con casos de prueba y resultados visibles.</p>
+      <button id="btnFunciones">Mostrar resultados</button>
+      <pre id="outFunciones"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Problema 6 - Gestión de libros</h2>
+      <p>Objeto <code>Libro</code> con métodos <code>edad()</code> e <code>info()</code>.</p>
+      <p>
+        <strong>Descripción:</strong> Crear un objeto Libro con propiedades: título, autor y año.
+        Sus métodos deben ser <code>edad()</code> para calcular cuántos años tiene desde su publicación
+        e <code>info()</code> para devolver una cadena con todos los datos.
+      </p>
+      <p>
+        <strong>Problema:</strong> Queremos gestionar una pequeña biblioteca personal. Cada libro tiene
+        título, autor y año de publicación. Necesitamos saber su antigüedad y mostrar un resumen de cada uno.
+      </p>
+      <p><strong>Extra:</strong> Crear varios libros y mostrar su información y edad en una tabla HTML.</p>
+      <button id="btnProblema6">Mostrar biblioteca</button>
+      <div id="outLibros"></div>
+    </section>
+  </div>
+
+  <section class="card qa" style="margin-top: 16px;">
+    <h2>Preguntas y respuestas</h2>
+    <p><strong>1. ¿Qué diferencias y semejanzas hay entre Java y JavaScript?</strong><br>
+      Java está más orientado a aplicaciones empresariales y Android. Es compilado, de tipado estático y se ejecuta en la JVM. JavaScript es interpretado, de tipado dinámico y esencial para el desarrollo web frontend y backend con Node.js. Ambos están orientados a objetos y su sintaxis se basa en C.
+    </p>
+    <p><strong>2. ¿Qué métodos tiene el objeto Date? (al menos 5)</strong><br>
+      <code>getFullYear()</code>, <code>getMonth()</code>, <code>getDate()</code>, <code>getHours()</code> y <code>getMinutes()</code>.
+    </p>
+    <p><strong>3. ¿Qué métodos tienen los arreglos? (al menos 5)</strong><br>
+      <code>push()</code>, <code>pop()</code>, <code>shift()</code>, <code>map()</code> y <code>filter()</code>.
+    </p>
+    <p><strong>4. ¿Cómo se declara una variable con alcance local dentro de una función?</strong><br>
+      Con <code>let</code> o <code>const</code> dentro del bloque de la función.
+    </p>
+    <p><strong>5. ¿Qué implicaciones tiene utilizar variables globales dentro de funciones?</strong><br>
+      Pueden leerse y modificarse desde cualquier parte, lo que puede causar colisiones de nombres, efectos secundarios no deseados y complicar depuración, mantenimiento y uso de memoria.
+    </p>
+  </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
