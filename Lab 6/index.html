@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Validador de Password Moderno</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="card" aria-labelledby="form-title">
+      <h1 id="form-title">Validador de Password</h1>
+      <p class="subtitle">Escribe una contraseña segura y verifica que coincida.</p>
+
+      <form id="password-form" novalidate>
+        <div class="field-group">
+          <label for="password">Password</label>
+          <div class="input-row">
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="new-password"
+              aria-describedby="password-help"
+              required
+            />
+            <button type="button" id="toggle-password" class="toggle-btn" aria-label="Mostrar u ocultar password">
+              Mostrar
+            </button>
+          </div>
+          <small id="char-counter" class="counter">0 / 8 caracteres mínimos</small>
+        </div>
+
+        <div id="password-help" class="help-box hidden" role="note">
+          <p class="help-title">Requisitos de seguridad:</p>
+          <ul id="requirements-list" class="requirements" aria-live="polite">
+            <li data-rule="length">Mínimo 8 caracteres</li>
+            <li data-rule="uppercase">Al menos 1 mayúscula</li>
+            <li data-rule="lowercase">Al menos 1 minúscula</li>
+            <li data-rule="number">Al menos 1 número</li>
+            <li data-rule="special">Al menos 1 carácter especial</li>
+          </ul>
+        </div>
+
+        <div class="field-group">
+          <label for="confirm-password">Verificar password</label>
+          <div class="input-row">
+            <input
+              id="confirm-password"
+              name="confirmPassword"
+              type="password"
+              autocomplete="new-password"
+              required
+            />
+            <button type="button" id="toggle-confirm" class="toggle-btn" aria-label="Mostrar u ocultar verificación">
+              Mostrar
+            </button>
+          </div>
+          <p id="match-message" class="match-message" aria-live="polite"></p>
+        </div>
+
+        <div class="strength" aria-live="polite">
+          <div class="strength-header">
+            <span>Fuerza de password</span>
+            <strong id="strength-label">Muy débil</strong>
+          </div>
+          <div class="strength-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="strength-bar-container">
+            <div id="strength-bar" class="strength-bar"></div>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Validar</button>
+        <p id="form-status" class="status" aria-live="assertive"></p>
+      </form>
+    </section>
+
+    <section class="questions" aria-labelledby="preguntas-title">
+      <h2 id="preguntas-title">Preguntas</h2>
+
+      <article>
+        <h3>1) ¿Por qué es una buena práctica usar JavaScript para checar que sean válidos los inputs de las formas antes de enviar los datos al servidor?</h3>
+        <p>
+          Es una buena práctica porque JavaScript permite validar en tiempo real y dar retroalimentación inmediata al usuario.
+          Esto mejora mucho la experiencia de uso, reduce errores de captura y evita viajes innecesarios al servidor
+          cuando los datos claramente no cumplen con el formato esperado. 
+        </p>
+      </article>
+
+      <article>
+        <h3>2) ¿Cómo puedes saltarte la seguridad de validaciones hechas con JavaScript?</h3>
+        <p>
+          Las validaciones en JavaScript pueden saltarse deshabilitando JavaScript en el navegador,
+          modificando el DOM o el código desde DevTools, alterando variables en tiempo de ejecución, o enviando peticiones
+          HTTP directas con herramientas externas sin usar el formulario.
+          Por eso, nunca deben considerarse una barrera de seguridad definitiva.
+        </p>
+      </article>
+
+      <article>
+        <h3>3) Si te puedes saltar la seguridad de las validaciones de JavaScript, entonces ¿por qué la primera pregunta dice que es una buena práctica?</h3>
+        <p>
+          Porque su objetivo principal es la eficiencia y la UX del lado cliente, no la seguridad final del sistema.
+          Validar en frontend ayuda a guiar al usuario y a reducir carga innecesaria en el servidor. Pero,
+          toda validación crítica y de seguridad debe repetirse y reforzarse en el servidor, que es el entorno controlado
+          y confiable para tomar decisiones de aceptación o rechazo de datos.
+        </p>
+      </article>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
