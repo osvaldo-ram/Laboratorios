@@ -1,0 +1,133 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laboratorio 1</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <link rel="stylesheet" href="styles.min.css">
+  <style>
+    main {
+      padding: 1rem 0;
+    }
+
+    .section-card {
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body class="grey lighten-5">
+  <header>
+    <nav class="teal darken-2">
+      <div class="nav-wrapper container">
+        <a href="#" class="brand-logo" style="font-size: 1.5rem;">Laboratorio 1 - A01713833</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section aria-labelledby="sobre-mi" class="card-panel section-card">
+      <h2 id="sobre-mi" class="teal-text text-darken-2">Sobre mí</h2>
+      <p>Hola, yo soy Osvaldo, soy un apasionado por la música, me encanta tocar la batería en mis tiempos libres. Me gusta viajar y pasar tiempo con mis amigos y mis mascotas.</p>
+    </section>
+
+    <section aria-labelledby="contacto" class="card-panel section-card">
+      <h2 id="contacto" class="teal-text text-darken-2">Datos de contacto</h2>
+      <ul class="collection">
+        <li class="collection-item"><strong>Nombre:</strong> Jesús Osvaldo Ramos Pérez</li>
+        <li class="collection-item"><strong>Matrícula:</strong> A01713833</li>
+        <li class="collection-item"><strong>Correo electrónico:</strong> a01713833@tec.mx</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="preguntas" class="card-panel section-card">
+      <h2 id="preguntas" class="teal-text text-darken-2">Preguntas y respuestas </h2>
+      <dl>
+        <dt>1.- ¿Cuál es la diferencia entre Internet y la World Wide Web?</dt><dd>El internet es una infraestructura global, funciona con protocolos TCP/IP para la transmisión de datos entre dispositivos y ofrece demasiados servicios. WWW es un servidor dentro de internet y se basa en el protocolo HTTP y hace uso de hipervínculos para conectar recursos. Y permite entrar a sitios web con navegadores como Chrome, Edge, Firefox, etc.</dd>
+
+        <dt>2.- ¿Cuáles son las partes de un URL?</dt><dd>Se compone a partir de un protocolo (http/https), el dominio que identifica al servidor, la ruta donde se encuentra el recurso, los parámetros que sirven para enviar datos y son opcionales, y una parte que apunta a una parte específica de la página si es el caso.</dd>
+
+        <dt>3.- ¿Cuál es el propósito de los métodos HTTP: GET, HEAD, POST, PUT, PATCH, DELETE?</dt><dd>Su propósito es hacer acciones que se quieren hacer a los recursos dentro de un servidor. GET se utiliza para obtener información sin modificarla. HEAD es parecido a GET pero solo devuelve los encabezados sin el contenido. POST permite enviar datos para crear un nuevo recurso. PUT se usa para reemplazar totalmente un recurso que ya existe, PATCH actualiza solo una parte del recurso y DELETE se encarga de eliminarlo.</dd>
+
+        <dt>4.- ¿Qué método HTTP se debe utilizar al enviar un formulario HTML, por ejemplo cuando ingresas tu usuario y contraseña en algún sitio? ¿Por qué?</dt><dd>POST, porque sirve para enviar información en el cuerpo de la solicitud y no en la URL, es útil por su seguridad cuando se trata de datos sensibles. Y está diseñado para enviar datos al servidor y que este los procese, como un registro de información.</dd>
+
+        <dt>5.- ¿Qué método HTTP se utiliza cuando a través de un navegador web se accede a una página a través de un URL?</dt><dd>GET, porque la solicitud que se hace es para obtener el contenido de la página web sin modificar nada del servidor.</dd>
+
+        <dt>6.- Un servidor web devuelve una respuesta HTTP con código 200. ¿Qué significa esto? ¿Ocurrió algún error?</dt><dd>El código 200 significa "OK", por lo que no es un error, sino que indica que la solicitud se procesó correctamente y el servidor devolvió el recurso solicitado.</dd>
+
+        <dt>7.- ¿Es responsabilidad del desarrollador corregir un sitio web si un usuario reporta que intentó acceder al sitio y se encontró con un error 404? ¿Por qué?</dt><dd>Sí, porque el error 404 indica que el recurso solicitado no fue encontrado en el servidor. Esto puede ser por una mala configuración de las rutas, archivos eliminados o errores en la estructura del sitio.</dd>
+
+        <dt>8.- ¿Es responsabilidad del desarrollador corregir un sitio web si un usuario reporta que intentó acceder al sitio y se encontró con un error 500? ¿Por qué?</dt><dd>Sí, porque el error 500 indica un fallo interno del servidor y no un problema del usuario. Esto puede ser por errores dentro del código, en la base de datos o en la lógica de la aplicación.</dd>
+
+        <dt>9.- ¿Qué significa que un atributo HTML5 esté depreciado o desaprobado (deprecated)? Menciona algunos elementos de HTML 4 que en HTML5 estén desaprobados.</dt><dd>Que un elemento esté depreciado significa que ya no se recomienda su uso porque fue reemplazado por mejores prácticas, es decir, nuevas etiquetas en HTML5 o prácticas basadas en CSS. Algunos ejemplos son font, center, frame y frameset.</dd>
+
+        <dt>10.- ¿Cuáles son las diferencias principales entre HTML 4 y HTML5?</dt><dd>HTML5 es una versión más moderna y completa que HTML4. Incluye nuevas etiquetas para organizar mejor las páginas, permite usar audio y video sin programas externos, mejora los formularios y funciona mejor en celulares. Deja el diseño a CSS y elimina etiquetas antiguas.</dd>
+
+        <dt>11.- ¿Qué componentes de estructura y estilo tiene una tabla?</dt><dd>En la estructura se usan etiquetas como table para crear la tabla, tr para las filas, th para los encabezados y td para las celdas de datos. En el estilo se puede usar CSS para bordes, colores, tamaño de letra, alineación, espaciado y ancho de columnas.</dd>
+
+        <dt>12.- ¿Cuáles son los principales controles de una forma HTML5?</dt><dd>input para capturar datos ya sea texto, correos o contraseñas. textarea para escribir textos largos. select para listas desplegables con opciones. checkbox y radio para seleccionar una o varias opciones.</dd>
+
+        <dt>13.- ¿Qué tanto soporte HTML5 tiene el navegador que utilizas?</dt><dd>Yo uso Microsoft Edge y tiene muy buen soporte de HTML5, porque usa el mismo motor de Google Chrome. Por lo que todas las funciones como etiquetas semánticas, reproducción nativa de audio y video y APIs de almacenamiento local son compatibles con mi navegador.</dd>
+
+        <dt>14.- ¿Cuál es el ciclo de vida de los sistemas de información?</dt><dd>Son las etapas por las que pasa un sistema desde que surge la necesidad hasta que se deja de usar. Estas etapas son análisis, diseño, pruebas, implementación y mantenimiento.</dd>
+
+        <dt>15.- ¿Cuál es el ciclo de desarrollo de sistemas de información?</dt><dd>Es un proceso técnico en fases para construir un sistema. Sus fases son análisis donde se identifican los requerimientos, diseño donde se planea la solución, desarrollo donde se programa el sistema, pruebas para validar su funcionamiento, implementación cuando se pone en operación y mantenimiento para corregir errores y hacer mejoras durante su uso.</dd>
+
+        <dt>16.- Como ingeniero de software ¿cuál es tu recomendación sobre el uso de !important en un CSS?</dt><dd>No lo recomiendo porque dificulta el mantenimiento y la depuración del código. Es útil para sobrescribir estilos de terceros, en cosas muy específicas y situaciones controladas.</dd>
+
+        <dt>17.- Si se pone una imagen de fondo en una página HTML, ¿por qué debe escogerse con cuidado?</dt><dd>Porque si se elige mal puede ralentizar la página, puede dificultar la lectura y afectar cómo se adapta a distintos dispositivos.</dd>
+
+        <dt>18.- Como ingeniero de software, ¿cuál es tu recomendación al elegir las unidades de una propiedad de estilo entre %, px y pt?</dt><dd>px es mejor cuando son detalles fijos como bordes o sombras. % para diseños fluidos y responsivos. pt solo para impresión. Para la tipografía es mejor rem, porque facilita la escalabilidad del diseño.</dd>
+
+        <dt>19.- ¿Por qué el uso de una versión minimizada del CSS mejora el rendimiento del sitio?</dt><dd>Mejora el rendimiento porque elimina espacios, comentarios y saltos de línea innecesarios, reduciendo el tamaño del archivo. Por lo que consume menos ancho de banda y permite un procesamiento más ágil para el navegador.</dd>
+      </dl>
+    </section>
+
+    <section aria-labelledby="material-design" class="card-panel section-card">
+      <h2 id="material-design" class="teal-text text-darken-2">Diseño Material</h2>
+      <p>Material Design es un sistema de diseño creado por Google que busca interfaces limpias, consistentes y fáciles de usar.</p>
+      <ul class="browser-default">
+        <li>Usa una jerarquía visual clara con tipografía legible y colores con buen contraste.</li>
+        <li>Organiza el contenido por componentes reutilizables como tarjetas, formularios, botones y navegación.</li>
+        <li>Incluye retroalimentación visual en la interacción, por ejemplo con efectos de ondas en botones.</li>
+        <li>Favorece el diseño responsive para que el contenido se adapte correctamente en celular y escritorio.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="formulario" class="card-panel section-card">
+      <h2 id="formulario" class="teal-text text-darken-2">Formulario de contacto</h2>
+      <form action="#" method="post">
+        <div class="input-field">
+          <input id="nombre" name="nombre" type="text" required>
+          <label for="nombre">Nombre</label>
+        </div>
+
+        <div class="input-field">
+          <input id="matricula" name="matricula" type="text" required>
+          <label for="matricula">Matrícula</label>
+        </div>
+
+        <div class="input-field">
+          <input id="correo" name="correo" type="email" required>
+          <label for="correo">Correo electrónico</label>
+        </div>
+
+        <div class="input-field">
+          <textarea id="mensaje" name="mensaje" class="materialize-textarea" rows="4" cols="40"></textarea>
+          <label for="mensaje">Mensaje</label>
+        </div>
+
+        <button class="btn waves-effect waves-light teal darken-2" type="submit">Enviar</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="page-footer teal darken-2">
+    <div class="container">
+      <p>Edición realizada con Visual Studio Code - <a class="grey-text text-lighten-3" href="https://code.visualstudio.com/">https://code.visualstudio.com/</a></p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>
