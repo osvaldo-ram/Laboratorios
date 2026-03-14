@@ -1,0 +1,8 @@
+[
+  {
+    "titulo": "Laboratorio 11",
+    "descripcion": "En esta actividad instalaremos y exploraremos Express, un framework de Node.js para hacer desarrollo en el back-end.",
+    "fecha": "14/3/2026, 14:04:57",
+    "completada": true
+  }
+]
