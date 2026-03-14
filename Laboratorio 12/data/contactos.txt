@@ -5,7 +5,8 @@
     "telefono": "+99 545 6484",
     "correo": "pedropkrock@gmail.com",
     "ciudad": "Narnia",
-    "notas": "pedro"
+    "notas": "pedro",
+    "favorito": false
   },
   {
     "id": "1773520707116",
@@ -13,6 +14,16 @@
     "telefono": "+55 55 268 43649",
     "correo": "alexff@gmail.com",
     "ciudad": "Texcoco",
-    "notas": "El Alex"
+    "notas": "El Alex",
+    "favorito": true
+  },
+  {
+    "id": "1773525074238",
+    "nombre": "Mamá",
+    "telefono": "+52 353 5254",
+    "correo": "jnetgeo@gmail.com",
+    "ciudad": "Sahuayo",
+    "notas": "Gfa",
+    "favorito": true
   }
 ]

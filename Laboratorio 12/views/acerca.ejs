@@ -2,16 +2,31 @@
 <%- include('includes/navbar.ejs') %>
 
 <section class="card page-card">
-  <p class="eyebrow">Acerca de</p>
-  <h1>¿Qué otros templating engines existen para node?</h1>
+  <p class="eyebrow">Acerca de MVC</p>
+  <h1>Beneficios y desventajas del estilo arquitectonico MVC</h1>
+
+  <h2>Que beneficios encuentras en el estilo MVC?</h2>
   <p>
-    Ademas de EJS, en Node existen otros motores de plantillas bastante usados como
-    Pug, Handlebars, Mustache, Nunjucks y Eta.
+    MVC mejora la separacion de responsabilidades: las rutas quedan limpias, los
+    controladores concentran el flujo de la peticion y el modelo encapsula el acceso
+    a datos. Eso hace mas sencillo mantener, probar y extender la aplicacion.
   </p>
   <p>
-    Cada uno tiene un enfoque diferente: Pug usa una sintaxis mas compacta, Handlebars
-    y Mustache se basan en plantillas logicas simples, y Nunjucks ofrece una experiencia
-    parecida a Jinja con mas herramientas para vistas complejas.
+    Tambien facilita reutilizar codigo. En este laboratorio el mismo modelo de
+    Contacto sirve para listar, guardar, obtener estadisticas y cambiar
+    el estado de favorito sin duplicar logica en las vistas o en las rutas.
+  </p>
+
+  <h2>Encuentras alguna desventaja en el estilo arquitectonico MVC?</h2>
+  <p>
+    Si la aplicacion es muy pequena, MVC puede sentirse mas verboso porque obliga a
+    repartir el codigo en varias carpetas y archivos. Al inicio parece mas trabajo
+    que una solucion con rutas directas.
+  </p>
+  <p>
+    Otra desventaja es que, si no se mantiene la disciplina, parte de la logica puede
+    terminar duplicada entre controladores y modelos. El patron ayuda, pero no corrige
+    por si solo un mal diseno.
   </p>
 </section>
 

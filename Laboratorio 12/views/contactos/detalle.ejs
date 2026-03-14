@@ -3,12 +3,23 @@
 
 <section class="card page-card">
   <p class="eyebrow">Detalle de contacto</p>
-  <h1><%= contacto.nombre %></h1>
+  <div class="card-heading">
+    <h1><%= contacto.nombre %></h1>
+    <% if (contacto.favorito) { %>
+      <span class="badge">Favorito</span>
+    <% } %>
+  </div>
   <p><strong>Telefono:</strong> <%= contacto.telefono %></p>
   <p><strong>Correo:</strong> <%= contacto.correo %></p>
   <p><strong>Ciudad:</strong> <%= contacto.ciudad %></p>
   <p><strong>Notas:</strong> <%= contacto.notas ? contacto.notas : 'Sin notas adicionales.' %></p>
   <div class="actions">
+    <form action="/contactos/<%= contacto.id %>/favorito" method="POST">
+      <input type="hidden" name="redirectTo" value="detalle">
+      <button class="button" type="submit">
+        <%= contacto.favorito ? 'Quitar de favoritos' : 'Marcar como favorito' %>
+      </button>
+    </form>
     <a class="button" href="/contactos">Volver a la lista</a>
     <a class="button button-secondary" href="/contactos/agregar">Agregar otro</a>
   </div>

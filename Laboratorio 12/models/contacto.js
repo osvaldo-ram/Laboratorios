@@ -14,51 +14,97 @@ function ensureDataFile() {
   }
 }
 
+function normalizeContact(contactData) {
+  return {
+    id: contactData.id,
+    nombre: contactData.nombre,
+    telefono: contactData.telefono,
+    correo: contactData.correo,
+    ciudad: contactData.ciudad,
+    notas: contactData.notas || '',
+    favorito: Boolean(contactData.favorito),
+  };
+}
+
 function readContacts() {
   ensureDataFile();
 
   try {
     const fileContent = fs.readFileSync(dataFile, 'utf8');
     const contacts = JSON.parse(fileContent);
-    return Array.isArray(contacts) ? contacts : [];
+
+    return Array.isArray(contacts) ? contacts.map(normalizeContact) : [];
   } catch (error) {
     return [];
   }
 }
 
-function saveContacts(contacts) {
+function writeContacts(contacts) {
   ensureDataFile();
   fs.writeFileSync(dataFile, JSON.stringify(contacts, null, 2));
 }
 
-function getAll() {
-  return readContacts();
-}
+module.exports = class Contacto {
+  constructor({ nombre, telefono, correo, ciudad, notas, favorito = false }) {
+    this.id = Date.now().toString();
+    this.nombre = nombre;
+    this.telefono = telefono;
+    this.correo = correo;
+    this.ciudad = ciudad;
+    this.notas = notas || '';
+    this.favorito = favorito;
+  }
 
-function getById(id) {
-  const contacts = readContacts();
-  return contacts.find((contact) => contact.id === id);
-}
+  save() {
+    const contacts = Contacto.fetchAll();
+    contacts.push({
+      id: this.id,
+      nombre: this.nombre,
+      telefono: this.telefono,
+      correo: this.correo,
+      ciudad: this.ciudad,
+      notas: this.notas,
+      favorito: this.favorito,
+    });
 
-function create(contactData) {
-  const contacts = readContacts();
-  const newContact = {
-    id: Date.now().toString(),
-    nombre: contactData.nombre,
-    telefono: contactData.telefono,
-    correo: contactData.correo,
-    ciudad: contactData.ciudad,
-    notas: contactData.notas,
-  };
+    writeContacts(contacts);
+  }
 
-  contacts.push(newContact);
-  saveContacts(contacts);
+  static fetchAll({ favoritosOnly = false } = {}) {
+    const contacts = readContacts();
 
-  return newContact;
-}
+    if (favoritosOnly) {
+      return contacts.filter((contact) => contact.favorito);
+    }
 
-module.exports = {
-  getAll,
-  getById,
-  create,
+    return contacts;
+  }
+
+  static findById(id) {
+    return Contacto.fetchAll().find((contact) => contact.id === id);
+  }
+
+  static toggleFavorite(id) {
+    const contacts = Contacto.fetchAll();
+    const contactIndex = contacts.findIndex((contact) => contact.id === id);
+
+    if (contactIndex === -1) {
+      return null;
+    }
+
+    contacts[contactIndex].favorito = !contacts[contactIndex].favorito;
+    writeContacts(contacts);
+
+    return contacts[contactIndex];
+  }
+
+  static getStats() {
+    const contacts = Contacto.fetchAll();
+    const favorites = contacts.filter((contact) => contact.favorito).length;
+
+    return {
+      total: contacts.length,
+      favorites,
+    };
+  }
 };

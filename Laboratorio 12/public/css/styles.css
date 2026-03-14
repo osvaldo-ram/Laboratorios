@@ -132,6 +132,11 @@ main.container {
   max-width: 760px;
 }
 
+.stat-card h2,
+.card h2 {
+  margin-top: 0;
+}
+
 .section-header {
   display: flex;
   align-items: end;
@@ -145,6 +150,10 @@ main.container {
   flex-wrap: wrap;
   gap: 0.75rem;
   margin-top: 1.5rem;
+}
+
+.compact-actions {
+  margin-top: 0;
 }
 
 .button {
@@ -181,6 +190,10 @@ main.container {
   gap: 0.9rem;
 }
 
+.contact-form form {
+  margin: 0;
+}
+
 .contact-form label {
   font-weight: 700;
 }
@@ -202,8 +215,49 @@ main.container {
   border-color: var(--accent);
 }
 
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.checkbox-field input {
+  width: auto;
+}
+
+.card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: #f1d7b7;
+  color: var(--accent-dark);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.favorite-card {
+  border-color: #d4b08a;
+}
+
+.stats-grid {
+  margin-top: 1.25rem;
+}
+
 .empty-state {
   text-align: center;
+}
+
+form {
+  margin: 0;
 }
 
 .site-footer {
