@@ -7,22 +7,22 @@
 
   <form class="contact-form" action="/contactos/agregar" method="POST">
     <label for="nombre">Nombre</label>
-    <input id="nombre" name="nombre" type="text" required>
+    <input id="nombre" name="nombre" type="text" value="<%= formData.nombre %>" required>
 
     <label for="telefono">Telefono</label>
-    <input id="telefono" name="telefono" type="tel" required>
+    <input id="telefono" name="telefono" type="tel" value="<%= formData.telefono %>" required>
 
     <label for="correo">Correo electronico</label>
-    <input id="correo" name="correo" type="email" required>
+    <input id="correo" name="correo" type="email" value="<%= formData.correo %>" required>
 
     <label for="ciudad">Ciudad</label>
-    <input id="ciudad" name="ciudad" type="text" required>
+    <input id="ciudad" name="ciudad" type="text" value="<%= formData.ciudad %>" required>
 
     <label for="notas">Notas</label>
-    <textarea id="notas" name="notas" rows="4" placeholder="Relacion, empresa o informacion extra"></textarea>
+    <textarea id="notas" name="notas" rows="4" placeholder="Relacion, empresa o informacion extra"><%= formData.notas %></textarea>
 
     <label class="checkbox-field" for="favorito">
-      <input id="favorito" name="favorito" type="checkbox">
+      <input id="favorito" name="favorito" type="checkbox" <%= formData.favorito ? 'checked' : '' %>>
       Guardar como contacto favorito
     </label>
 

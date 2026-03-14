@@ -2,31 +2,30 @@
 <%- include('includes/navbar.ejs') %>
 
 <section class="card page-card">
-  <p class="eyebrow">Acerca de MVC</p>
-  <h1>Beneficios y desventajas del estilo arquitectonico MVC</h1>
+  <p class="eyebrow">Laboratorio 14</p>
+  <h1>Como se aplicaron cookies y sesiones en esta practica</h1>
 
-  <h2>Que beneficios encuentras en el estilo MVC?</h2>
+  <h2>Donde se usan las cookies?</h2>
   <p>
-    MVC mejora la separacion de responsabilidades: las rutas quedan limpias, los
-    controladores concentran el flujo de la peticion y el modelo encapsula el acceso
-    a datos. Eso hace mas sencillo mantener, probar y extender la aplicacion.
+    La aplicacion guarda en cookies la preferencia de la lista de contactos
+    y el ultimo contacto consultado. Ambas viajan en el header y luego se leen
+    desde el servidor para personalizar la respuesta.
   </p>
   <p>
-    Tambien facilita reutilizar codigo. En este laboratorio el mismo modelo de
-    Contacto sirve para listar, guardar, obtener estadisticas y cambiar
-    el estado de favorito sin duplicar logica en las vistas o en las rutas.
+    Esas cookies se configuran con <code>HttpOnly</code> y <code>SameSite=Lax</code>
+    para reducir exposicion desde JavaScript del navegador y mantener un uso basico
+    mas seguro.
   </p>
 
-  <h2>Encuentras alguna desventaja en el estilo arquitectonico MVC?</h2>
+  <h2>Donde se usan las sesiones?</h2>
   <p>
-    Si la aplicacion es muy pequena, MVC puede sentirse mas verboso porque obliga a
-    repartir el codigo en varias carpetas y archivos. Al inicio parece mas trabajo
-    que una solucion con rutas directas.
+    La sesion almacena el conteo de visitas a inicio, los ultimos contactos vistos
+    durante la sesion actual y los mensajes flash de exito o error despues de una
+    redireccion.
   </p>
   <p>
-    Otra desventaja es que, si no se mantiene la disciplina, parte de la logica puede
-    terminar duplicada entre controladores y modelos. El patron ayuda, pero no corrige
-    por si solo un mal diseno.
+    Tambien se agrego un boton para cerrar la sesion y destruirla desde el servidor,
+    mostrando el flujo completo que pide la actividad.
   </p>
 </section>
 

@@ -7,11 +7,15 @@
     <h1><%= onlyFavorites ? 'Contactos favoritos' : 'Contactos guardados' %></h1>
   </div>
   <div class="actions compact-actions">
-    <a class="button button-secondary" href="<%= onlyFavorites ? '/contactos' : '/contactos?favoritos=1' %>">
+    <a class="button button-secondary" href="<%= onlyFavorites ? '/contactos?favoritos=0' : '/contactos?favoritos=1' %>">
       <%= onlyFavorites ? 'Ver todos' : 'Ver favoritos' %>
     </a>
     <a class="button" href="/contactos/agregar">Nuevo contacto</a>
   </div>
+</section>
+
+<section class="card status-card">
+  <p><strong>Preferencia guardada en cookie:</strong> <%= preferredViewLabel %>.</p>
 </section>
 
 <% if (contactos.length > 0) { %>

@@ -2,13 +2,28 @@
   <div class="container">
     <nav class="navbar">
       <a class="brand" href="/">Agenda de contactos</a>
-      <ul class="nav-links">
-        <li><a class="<%= currentPath === '/' ? 'active' : '' %>" href="/">Inicio</a></li>
-        <li><a class="<%= currentPath === '/contactos' ? 'active' : '' %>" href="/contactos">Lista de contactos</a></li>
-        <li><a class="<%= currentPath === '/contactos/agregar' ? 'active' : '' %>" href="/contactos/agregar">Agregar contacto</a></li>
-        <li><a class="<%= currentPath === '/acerca-de' ? 'active' : '' %>" href="/acerca-de">Acerca de</a></li>
-      </ul>
+      <div class="nav-panel">
+        <ul class="nav-links">
+          <li><a class="<%= currentPath === '/' ? 'active' : '' %>" href="/">Inicio</a></li>
+          <li><a class="<%= currentPath === '/contactos' ? 'active' : '' %>" href="/contactos?favoritos=0">Lista de contactos</a></li>
+          <li><a class="<%= currentPath === '/contactos/agregar' ? 'active' : '' %>" href="/contactos/agregar">Agregar contacto</a></li>
+          <li><a class="<%= currentPath === '/acerca-de' ? 'active' : '' %>" href="/acerca-de">Acerca de</a></li>
+        </ul>
+        <div class="session-tools">
+          <span>Visitas en sesion: <strong><%= sessionVisitCount %></strong></span>
+          <% if (hasActiveSession) { %>
+            <form action="/cerrar-sesion" method="POST">
+              <button class="session-button" type="submit">Cerrar sesion</button>
+            </form>
+          <% } %>
+        </div>
+      </div>
     </nav>
   </div>
 </header>
 <main class="container">
+  <% if (flash) { %>
+    <section class="flash flash-<%= flash.type %>">
+      <p><%= flash.message %></p>
+    </section>
+  <% } %>

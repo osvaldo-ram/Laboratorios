@@ -57,6 +57,15 @@ code {
   padding: 1rem 0;
 }
 
+.nav-panel {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
 .brand {
   font-size: 1.35rem;
   font-weight: 700;
@@ -81,6 +90,29 @@ code {
 .nav-links a:hover {
   background: var(--surface-alt);
   color: var(--accent-dark);
+}
+
+.session-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.session-button {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--accent-dark);
+  padding: 0.55rem 0.95rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.session-button:hover {
+  background: var(--surface-alt);
 }
 
 main.container {
@@ -252,6 +284,53 @@ main.container {
   margin-top: 1.25rem;
 }
 
+.flash {
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.25rem;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.flash p {
+  margin: 0;
+}
+
+.flash-success {
+  background: #f4f0e3;
+  border-color: #cfb78c;
+}
+
+.flash-error {
+  background: #f8e7df;
+  border-color: #d69b7d;
+}
+
+.status-card {
+  margin-bottom: 1.25rem;
+}
+
+.status-card p {
+  margin: 0;
+}
+
+.recent-list {
+  display: grid;
+  gap: 0.9rem;
+  padding-left: 1.2rem;
+}
+
+.recent-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.recent-list span {
+  color: var(--muted);
+}
+
 .empty-state {
   text-align: center;
 }
@@ -268,12 +347,18 @@ form {
 
 @media (max-width: 720px) {
   .navbar,
-  .section-header {
+  .section-header,
+  .nav-panel,
+  .recent-list li {
     align-items: flex-start;
     flex-direction: column;
   }
 
   .hero {
     padding: 2rem;
+  }
+
+  .session-tools {
+    flex-wrap: wrap;
   }
 }

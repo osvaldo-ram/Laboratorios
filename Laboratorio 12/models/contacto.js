@@ -84,6 +84,14 @@ module.exports = class Contacto {
     return Contacto.fetchAll().find((contact) => contact.id === id);
   }
 
+  static findByIds(ids = []) {
+    const contacts = Contacto.fetchAll();
+
+    return ids
+      .map((id) => contacts.find((contact) => contact.id === id))
+      .filter(Boolean);
+  }
+
   static toggleFavorite(id) {
     const contacts = Contacto.fetchAll();
     const contactIndex = contacts.findIndex((contact) => contact.id === id);
