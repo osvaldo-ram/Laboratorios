@@ -1,0 +1,18 @@
+Descripcion de package.json
+
+El archivo package.json define la configuracion basica del proyecto Node.js gestor-tareas.
+
+- Nombre: gestor-tareas
+- Version: 1.0.0
+- Descripcion: Gestor de tareas con Express
+- Archivo principal: app.js
+
+Scripts disponibles:
+- start: ejecuta la aplicacion con node app.js
+- dev: ejecuta la aplicacion en modo desarrollo con recarga usando node --watch app.js
+
+Dependencias:
+- express (^4.18.2): framework para crear el servidor web y manejar rutas.
+- body-parser (^1.20.2): middleware para procesar datos enviados en las solicitudes HTTP.
+
+En resumen, este package.json sirve para identificar el proyecto, indicar como iniciarlo y registrar las librerias necesarias para que funcione.
