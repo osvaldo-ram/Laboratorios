@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1773520407931",
+    "nombre": "Pedro Pica Piedra",
+    "telefono": "+99 545 6484",
+    "correo": "pedropkrock@gmail.com",
+    "ciudad": "Narnia",
+    "notas": "pedro"
+  },
+  {
+    "id": "1773520707116",
+    "nombre": "Gael Cass Mendez Parras",
+    "telefono": "+55 55 268 43649",
+    "correo": "alexff@gmail.com",
+    "ciudad": "Texcoco",
+    "notas": "El Alex"
+  }
+]

@@ -1,0 +1,17 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/navbar.ejs') %>
+
+<section class="card page-card">
+  <p class="eyebrow">Detalle de contacto</p>
+  <h1><%= contacto.nombre %></h1>
+  <p><strong>Telefono:</strong> <%= contacto.telefono %></p>
+  <p><strong>Correo:</strong> <%= contacto.correo %></p>
+  <p><strong>Ciudad:</strong> <%= contacto.ciudad %></p>
+  <p><strong>Notas:</strong> <%= contacto.notas ? contacto.notas : 'Sin notas adicionales.' %></p>
+  <div class="actions">
+    <a class="button" href="/contactos">Volver a la lista</a>
+    <a class="button button-secondary" href="/contactos/agregar">Agregar otro</a>
+  </div>
+</section>
+
+<%- include('../includes/footer.ejs') %>

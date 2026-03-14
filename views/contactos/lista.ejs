@@ -1,0 +1,32 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/navbar.ejs') %>
+
+<section class="section-header">
+  <div>
+    <p class="eyebrow">Lista de contactos</p>
+    <h1>Contactos guardados</h1>
+  </div>
+  <a class="button" href="/contactos/agregar">Nuevo contacto</a>
+</section>
+
+<% if (contactos.length > 0) { %>
+  <section class="grid">
+    <% for (let contacto of contactos) { %>
+      <article class="card">
+        <h2><%= contacto.nombre %></h2>
+        <p><strong>Telefono:</strong> <%= contacto.telefono %></p>
+        <p><strong>Correo:</strong> <%= contacto.correo %></p>
+        <p><strong>Ciudad:</strong> <%= contacto.ciudad %></p>
+        <a class="text-link" href="/contactos/<%= contacto.id %>">Ver detalle</a>
+      </article>
+    <% } %>
+  </section>
+<% } else { %>
+  <section class="card page-card empty-state">
+    <h2>Aun no hay contactos registrados</h2>
+    <p>Agrega el primer contacto desde el formulario para verlo aqui.</p>
+    <a class="button" href="/contactos/agregar">Ir al formulario</a>
+  </section>
+<% } %>
+
+<%- include('../includes/footer.ejs') %>
