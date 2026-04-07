@@ -1,0 +1,14 @@
+{
+  "name": "biblioteca",
+  "version": "1.0.0",
+  "description": "CRUD simple de biblioteca con Express, EJS y MySQL.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "mysql2": "^3.14.1"
+  }
+}
