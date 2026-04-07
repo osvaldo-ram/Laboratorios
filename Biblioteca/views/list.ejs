@@ -6,38 +6,53 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 30px; }
-        .container { max-width: 800px; margin: 0 auto; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; background: white; padding: 18px 22px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .topbar p { color: #34495e; }
+        .topbar strong { color: #2c3e50; }
+        .topbar-actions { display: flex; gap: 10px; align-items: center; }
         h1 { text-align: center; margin-bottom: 25px; color: #2c3e50; }
         .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 14px; color: white; }
-        .btn-add { background: #27ae60; display: inline-block; margin-bottom: 20px; }
+        .btn-add { background: #27ae60; }
         .btn-view { background: #3498db; }
         .btn-edit { background: #f39c12; }
         .btn-delete { background: #e74c3c; }
+        .btn-logout { background: #2c3e50; }
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         th { background: #2c3e50; color: white; padding: 14px; text-align: left; }
         td { padding: 12px 14px; border-bottom: 1px solid #eee; }
         tr:hover { background: #f9f9f9; }
-        .actions { display: flex; gap: 6px; }
-        .empty { text-align: center; padding: 40px; color: #999; }
+        .actions { display: flex; gap: 6px; align-items: center; }
+        .empty { text-align: center; padding: 40px; color: #999; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="topbar">
+            <p>Sesion activa: <strong><%= currentUser ? currentUser.username : 'Usuario' %></strong></p>
+            <div class="topbar-actions">
+                <a href="/add" class="btn btn-add">Agregar libro</a>
+                <form action="/logout" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="submit" class="btn btn-logout">Cerrar sesion</button>
+                </form>
+            </div>
+        </div>
+
         <h1>Mi Biblioteca</h1>
-        <a href="/add" class="btn btn-add">+ Agregar Libro</a>
 
         <% if (libros.length === 0) { %>
             <div class="empty">
-                <p>No hay libros registrados aún.</p>
+                <p>No hay libros registrados aun.</p>
             </div>
         <% } else { %>
             <table>
                 <thead>
                     <tr>
-                        <th>Título</th>
+                        <th>Titulo</th>
                         <th>Autor</th>
-                        <th>Género</th>
-                        <th>Año</th>
+                        <th>Genero</th>
+                        <th>Anio</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -52,8 +67,9 @@
                                 <div class="actions">
                                     <a href="/libro/<%= libro.id %>" class="btn btn-view">Ver</a>
                                     <a href="/edit/<%= libro.id %>" class="btn btn-edit">Editar</a>
-                                    <form action="/delete/<%= libro.id %>" method="POST" style="display:inline;">
-                                        <button type="submit" class="btn btn-delete" onclick="return confirm('¿Eliminar este libro?')">Eliminar</button>
+                                    <form action="/delete/<%= libro.id %>" method="POST">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        <button type="submit" class="btn btn-delete" onclick="return confirm('Eliminar este libro?')">Eliminar</button>
                                     </form>
                                 </div>
                             </td>

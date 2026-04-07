@@ -17,3 +17,7 @@ Por ejemplo, si tu consulta está armada juntando texto directamente con lo que 
 Para evitar esto, lo más importante es usar consultas parametrizadas (con ? o placeholders), porque así el sistema entiende que lo que manda el usuario es solo un dato, no código SQL.
 
 También ayuda validar lo que ingresa el usuario, dar solo los permisos necesarios a la base de datos y mantener todo el SQL bien organizado en la capa del modelo.
+
+3. ¿Qué otras formas de autentificación existen?
+
+Existen varias formas de autenticación además del usuario y contraseña, como el uso de tokens o JWT en aplicaciones y APIs, el inicio de sesión con cuentas externas como Google o GitHub mediante OAuth, la autenticación de dos factores (2FA) que agrega un código extra de seguridad, los enlaces mágicos enviados por correo, y métodos más modernos como biometría o passkeys, que permiten entrar con huella, rostro o el dispositivo del usuario.

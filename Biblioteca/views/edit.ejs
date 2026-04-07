@@ -6,33 +6,53 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 30px; }
-        .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .page { max-width: 760px; margin: 0 auto; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; background: white; padding: 18px 22px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .topbar a { color: #3498db; text-decoration: none; }
+        .topbar p { color: #34495e; }
+        .topbar strong { color: #2c3e50; }
+        .topbar-actions { display: flex; gap: 10px; align-items: center; }
+        .container { max-width: 520px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         h1 { margin-bottom: 20px; color: #2c3e50; }
         label { display: block; margin-top: 15px; font-weight: bold; color: #555; }
         input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
         button { margin-top: 20px; padding: 12px 24px; background: #f39c12; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
-        a { color: #3498db; text-decoration: none; }
+        .logout-btn { margin-top: 0; padding: 8px 16px; font-size: 14px; background: #2c3e50; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a href="/">← Volver</a>
-        <h1>Editar Libro</h1>
-        <form action="/edit/<%= libro.id %>" method="POST">
-            <label>Título:</label>
-            <input type="text" name="titulo" value="<%= libro.titulo %>" required>
+    <div class="page">
+        <div class="topbar">
+            <a href="/">&larr; Volver</a>
+            <div class="topbar-actions">
+                <p>Sesion activa: <strong><%= currentUser ? currentUser.username : 'Usuario' %></strong></p>
+                <form action="/logout" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="submit" class="logout-btn">Cerrar sesion</button>
+                </form>
+            </div>
+        </div>
 
-            <label>Autor:</label>
-            <input type="text" name="autor" value="<%= libro.autor %>" required>
+        <div class="container">
+            <h1>Editar Libro</h1>
+            <form action="/edit/<%= libro.id %>" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-            <label>Género:</label>
-            <input type="text" name="genero" value="<%= libro.genero %>">
+                <label>Titulo:</label>
+                <input type="text" name="titulo" value="<%= libro.titulo %>" required>
 
-            <label>Año:</label>
-            <input type="number" name="anio" value="<%= libro.anio %>">
+                <label>Autor:</label>
+                <input type="text" name="autor" value="<%= libro.autor %>" required>
 
-            <button type="submit">Guardar Cambios</button>
-        </form>
+                <label>Genero:</label>
+                <input type="text" name="genero" value="<%= libro.genero %>">
+
+                <label>Anio:</label>
+                <input type="number" name="anio" value="<%= libro.anio %>">
+
+                <button type="submit">Guardar Cambios</button>
+            </form>
+        </div>
     </div>
 </body>
 </html>

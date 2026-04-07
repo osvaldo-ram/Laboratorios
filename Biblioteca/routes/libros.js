@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const librosController = require('../controllers/librosController');
+const isAuth = require('../middleware/is-auth');
+
+router.use(isAuth);
 
 router.get('/', librosController.getLibros);
 router.get('/add', librosController.getAdd);
