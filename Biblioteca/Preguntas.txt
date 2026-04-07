@@ -1,0 +1,19 @@
+1. ¿Qué ventajas tiene escribir el código SQL únicamente en la capa del modelo?
+
+Básicamente, te ayuda a tener todo más ordenado. Cada parte de tu aplicación se enfoca en lo suyo: el modelo se encarga de los datos, el controlador de la lógica y la vista de lo visual.
+
+También hace que sea mucho más fácil darle mantenimiento. Si necesitas cambiar una consulta, ya sabes exactamente dónde ir (los modelos), en lugar de estar buscando por todo el proyecto.
+
+Además, puedes reutilizar código sin estar copiando y pegando consultas en diferentes lugares, lo cual ahorra tiempo y evita errores.
+
+Y por el lado de la seguridad, tener todo el SQL en un solo lugar hace más fácil controlar que uses buenas prácticas (como los placeholders) para evitar problemas como inyecciones SQL. Incluso, si algún día cambias de base de datos, solo tendrías que ajustar los modelos y listo.
+
+2. ¿Qué es SQL Injection y cómo se puede prevenir?
+
+SQL Injection es cuando alguien mete código SQL malicioso en un campo de entrada, como un formulario o una URL, con la intención de manipular la base de datos.
+
+Por ejemplo, si tu consulta está armada juntando texto directamente con lo que escribe el usuario, alguien podría meter algo como ' OR '1'='1 y hacer que la consulta devuelva todos los registros, saltándose cualquier filtro o login.
+
+Para evitar esto, lo más importante es usar consultas parametrizadas (con ? o placeholders), porque así el sistema entiende que lo que manda el usuario es solo un dato, no código SQL.
+
+También ayuda validar lo que ingresa el usuario, dar solo los permisos necesarios a la base de datos y mantener todo el SQL bien organizado en la capa del modelo.
