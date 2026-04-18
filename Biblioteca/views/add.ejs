@@ -18,6 +18,7 @@
         input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
         button { margin-top: 20px; padding: 12px 24px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
         .logout-btn { margin-top: 0; padding: 8px 16px; font-size: 14px; background: #2c3e50; }
+        .message { border-radius: 6px; padding: 12px 14px; margin-bottom: 16px; background: #fdecea; color: #b03a2e; }
     </style>
 </head>
 <body>
@@ -35,6 +36,11 @@
 
         <div class="container">
             <h1>Agregar Libro</h1>
+
+            <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+                <div class="message"><%= errorMessage %></div>
+            <% } %>
+
             <form action="/add" method="POST">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 

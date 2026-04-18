@@ -23,8 +23,14 @@ app.use(session({
 }));
 app.use(csrfProtection);
 app.use((request, response, next) => {
+    const user = request.session.user || null;
+    const permissions = user && Array.isArray(user.permissions) ? user.permissions : [];
+
     response.locals.isAuthenticated = !!request.session.isLoggedIn;
-    response.locals.currentUser = request.session.user || null;
+    response.locals.currentUser = user;
+    response.locals.currentRoles = user && Array.isArray(user.roles) ? user.roles : [];
+    response.locals.currentPermissions = permissions;
+    response.locals.hasPermission = permission => permissions.includes(permission);
     response.locals.csrfToken = request.csrfToken();
     next();
 });
@@ -42,7 +48,7 @@ app.use((error, request, response, next) => {
 
     console.error(error);
     response.status(500).send(
-        'Error interno. Revisa la conexion a MySQL, la tabla usuarios y las variables DB_HOST, DB_USER, DB_PASSWORD, DB_NAME y SESSION_SECRET.'
+        'Error interno. Revisa la conexion a MySQL, el esquema RBAC y las variables DB_HOST, DB_USER, DB_PASSWORD, DB_NAME y SESSION_SECRET.'
     );
 });
 

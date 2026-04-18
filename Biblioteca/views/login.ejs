@@ -6,9 +6,10 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #eef2f7, #dbe7f3); min-height: 100vh; padding: 30px; }
-        .wrapper { max-width: 480px; margin: 0 auto; }
+        .wrapper { max-width: 980px; margin: 0 auto; }
         .top-links { display: flex; justify-content: center; gap: 14px; margin-bottom: 20px; }
         .top-links a { color: #2c3e50; text-decoration: none; font-weight: 600; }
+        .login-layout { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 22px; align-items: start; }
         .card { background: white; padding: 32px; border-radius: 14px; box-shadow: 0 18px 40px rgba(44, 62, 80, 0.14); }
         h1 { color: #2c3e50; margin-bottom: 10px; }
         p { color: #5d6d7e; margin-bottom: 18px; }
@@ -20,6 +21,16 @@
         .message.success { background: #eafaf1; color: #1e8449; }
         .helper { margin-top: 18px; text-align: center; }
         .helper a { color: #3498db; text-decoration: none; }
+        .demo-box { background: #fff; border: 1px solid #d6e2ee; border-left: 5px solid #3498db; border-radius: 8px; padding: 20px; box-shadow: 0 10px 24px rgba(44, 62, 80, 0.1); }
+        .demo-box h2 { color: #2c3e50; font-size: 20px; margin-bottom: 12px; }
+        .demo-box p { margin-bottom: 10px; }
+        .demo-box .credential { background: #f4f8fb; border-radius: 6px; padding: 10px 12px; margin-top: 10px; color: #2c3e50; }
+        .demo-box strong { display: block; color: #34495e; margin-bottom: 3px; }
+        .demo-box code { font-family: 'Segoe UI', sans-serif; font-weight: 700; color: #1f618d; }
+        @media (max-width: 760px) {
+            .wrapper { max-width: 480px; }
+            .login-layout { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -29,31 +40,46 @@
             <a href="/signup">Crear cuenta</a>
         </div>
 
-        <div class="card">
-            <h1>Iniciar sesion</h1>
-            <p>Accede para administrar los libros de la biblioteca.</p>
+        <div class="login-layout">
+            <div class="card">
+                <h1>Iniciar sesion</h1>
+                <p>Accede para administrar los libros de la biblioteca.</p>
 
-            <% if (errorMessage) { %>
-                <div class="message error"><%= errorMessage %></div>
-            <% } %>
+                <% if (errorMessage) { %>
+                    <div class="message error"><%= errorMessage %></div>
+                <% } %>
 
-            <% if (successMessage) { %>
-                <div class="message success"><%= successMessage %></div>
-            <% } %>
+                <% if (successMessage) { %>
+                    <div class="message success"><%= successMessage %></div>
+                <% } %>
 
-            <form action="/login" method="POST">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <form action="/login" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-                <label>Usuario:</label>
-                <input type="text" name="username" value="<%= oldInput.username %>" required>
+                    <label>Usuario:</label>
+                    <input type="text" name="username" value="<%= oldInput.username %>" required>
 
-                <label>Password:</label>
-                <input type="password" name="password" required>
+                    <label>Password:</label>
+                    <input type="password" name="password" required>
 
-                <button type="submit">Entrar</button>
-            </form>
+                    <button type="submit">Entrar</button>
+                </form>
 
-            <p class="helper">No tienes cuenta? <a href="/signup">Registrate aqui</a>.</p>
+                <p class="helper">No tienes cuenta? <a href="/signup">Registrate aqui</a>.</p>
+            </div>
+
+            <aside class="demo-box">
+                <h2>Ingresar como admin</h2>
+                <p>Cuenta de prueba para revisar los permisos de administrador.</p>
+                <div class="credential">
+                    <strong>Usuario</strong>
+                    <code>admin</code>
+                </div>
+                <div class="credential">
+                    <strong>Contrasena</strong>
+                    <code>admin123</code>
+                </div>
+            </aside>
         </div>
     </div>
 </body>

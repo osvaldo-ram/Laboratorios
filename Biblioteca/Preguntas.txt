@@ -1,23 +1,25 @@
 1. ¿Qué ventajas tiene escribir el código SQL únicamente en la capa del modelo?
-
 Básicamente, te ayuda a tener todo más ordenado. Cada parte de tu aplicación se enfoca en lo suyo: el modelo se encarga de los datos, el controlador de la lógica y la vista de lo visual.
-
-También hace que sea mucho más fácil darle mantenimiento. Si necesitas cambiar una consulta, ya sabes exactamente dónde ir (los modelos), en lugar de estar buscando por todo el proyecto.
-
+También hace que sea mucho más fácil darle mantenimiento. Si necesitas cambiar una consulta, ya sabes exactamente dónde ir, que en este caso sería a los modelos, en lugar de estar buscando por todo el proyecto.
 Además, puedes reutilizar código sin estar copiando y pegando consultas en diferentes lugares, lo cual ahorra tiempo y evita errores.
-
-Y por el lado de la seguridad, tener todo el SQL en un solo lugar hace más fácil controlar que uses buenas prácticas (como los placeholders) para evitar problemas como inyecciones SQL. Incluso, si algún día cambias de base de datos, solo tendrías que ajustar los modelos y listo.
+Y por el lado de la seguridad, tener todo el SQL en un solo lugar hace más fácil controlar que uses buenas prácticas, como los placeholders, para evitar problemas como inyecciones SQL. Incluso, si algún día cambias de base de datos, solo tendrías que ajustar los modelos y no toda la aplicación.
 
 2. ¿Qué es SQL Injection y cómo se puede prevenir?
-
-SQL Injection es cuando alguien mete código SQL malicioso en un campo de entrada, como un formulario o una URL, con la intención de manipular la base de datos.
-
-Por ejemplo, si tu consulta está armada juntando texto directamente con lo que escribe el usuario, alguien podría meter algo como ' OR '1'='1 y hacer que la consulta devuelva todos los registros, saltándose cualquier filtro o login.
-
-Para evitar esto, lo más importante es usar consultas parametrizadas (con ? o placeholders), porque así el sistema entiende que lo que manda el usuario es solo un dato, no código SQL.
-
-También ayuda validar lo que ingresa el usuario, dar solo los permisos necesarios a la base de datos y mantener todo el SQL bien organizado en la capa del modelo.
+SQL Injection es una vulnerabilidad donde un usuario introduce código SQL malicioso en entradas como formularios para manipular la base de datos.
+Por ejemplo, al concatenar directamente lo que escribe el usuario en una consulta, alguien podría usar algo como ' OR '1'='1 y saltarse validaciones.
+Para prevenirlo, se deben usar consultas parametrizadas, validar los datos de entrada y limitar los permisos de la base de datos.
 
 3. ¿Qué otras formas de autentificación existen?
+Existen varias formas de autenticación además del usuario y contraseña, como el uso de tokens o JWT en aplicaciones y APIs, el inicio de sesión con cuentas externas como Google o GitHub mediante OAuth, la autenticación de dos factores, los enlaces mágicos enviados por correo y métodos más modernos como biometría o passkeys, que permiten entrar con huella, rostro o el dispositivo del usuario.
 
-Existen varias formas de autenticación además del usuario y contraseña, como el uso de tokens o JWT en aplicaciones y APIs, el inicio de sesión con cuentas externas como Google o GitHub mediante OAuth, la autenticación de dos factores (2FA) que agrega un código extra de seguridad, los enlaces mágicos enviados por correo, y métodos más modernos como biometría o passkeys, que permiten entrar con huella, rostro o el dispositivo del usuario.
+4. ¿En qué consiste el control de acceso basado en roles?
+El control de acceso basado en roles, también conocido como RBAC, consiste en dar permisos a los usuarios dependiendo del rol que tienen dentro de un sistema. En lugar de asignar permisos usuario por usuario, primero se crean roles, por ejemplo administrador, usuario normal, editor o invitado, y luego a cada rol se le asignan las acciones que puede realizar.
+Por ejemplo, en nuestra biblioteca un usuario normal puede ver libros y escribir reseñas, pero no puede eliminar libros. En cambio, un administrador sí puede agregar libros, eliminarlos y borrar reseñas. La idea es que cada persona tenga acceso solamente a lo que necesita para cumplir su función.
+Esto ayuda a que la aplicación sea más segura y más fácil de administrar. Si mañana entra otro administrador, no tenemos que configurar todos sus permisos uno por uno, simplemente le asignamos el rol de administrador y automáticamente obtiene los permisos correspondientes.
+
+5. Investiguen y describan 2 sistemas, uno que aplique RBAC y uno que no. Realicen un análisis de las ventajas y desventajas de cada uno con respecto al control de acceso.
+Un ejemplo de sistema que aplica RBAC es Google Workspace, donde existen distintos roles como usuarios y administradores, cada uno con permisos específicos. Esto permite que cada persona solo acceda a lo que le corresponde.
+La ventaja es que el control de acceso es más seguro y organizado, además de facilitar la administración. La desventaja es que puede ser más complejo de configurar correctamente.
+Por otro lado, un sistema sin RBAC sería una aplicación simple donde todos los usuarios tienen los mismos permisos, como un blog básico.
+La ventaja es que es fácil de implementar, pero la desventaja es que el control de acceso es débil, ya que cualquier usuario puede realizar acciones sensibles.
+En conclusión, RBAC es mejor para sistemas más grandes o con información importante, mientras que sin RBAC solo es viable en aplicaciones muy simples.

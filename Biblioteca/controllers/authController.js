@@ -52,6 +52,13 @@ exports.postLogin = async (request, response, next) => {
             });
         }
 
+        let access = await Usuario.getAccess(usuario.id);
+
+        if (access.roles.length === 0) {
+            await Usuario.assignDefaultRole(usuario.id);
+            access = await Usuario.getAccess(usuario.id);
+        }
+
         request.session.regenerate(error => {
             if (error) {
                 return next(error);
@@ -60,7 +67,9 @@ exports.postLogin = async (request, response, next) => {
             request.session.isLoggedIn = true;
             request.session.user = {
                 id: usuario.id,
-                username: usuario.username
+                username: usuario.username,
+                roles: access.roles,
+                permissions: access.permissions
             };
 
             request.session.save(saveError => {

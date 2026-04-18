@@ -6,32 +6,49 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 30px; }
-        .container { max-width: 900px; margin: 0 auto; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; background: white; padding: 18px 22px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .container { max-width: 980px; margin: 0 auto; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; background: white; padding: 18px 22px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
         .topbar p { color: #34495e; }
         .topbar strong { color: #2c3e50; }
+        .roles { display: block; margin-top: 4px; color: #697783; font-size: 13px; }
         .topbar-actions { display: flex; gap: 10px; align-items: center; }
         h1 { text-align: center; margin-bottom: 25px; color: #2c3e50; }
-        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 14px; color: white; }
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 14px; color: white; white-space: nowrap; }
         .btn-add { background: #27ae60; }
         .btn-view { background: #3498db; }
         .btn-edit { background: #f39c12; }
         .btn-delete { background: #e74c3c; }
         .btn-logout { background: #2c3e50; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         th { background: #2c3e50; color: white; padding: 14px; text-align: left; }
-        td { padding: 12px 14px; border-bottom: 1px solid #eee; }
+        td { padding: 12px 14px; border-bottom: 1px solid #eee; vertical-align: middle; }
         tr:hover { background: #f9f9f9; }
-        .actions { display: flex; gap: 6px; align-items: center; }
-        .empty { text-align: center; padding: 40px; color: #999; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .rating { color: #2c3e50; font-weight: 600; }
+        .muted { color: #7f8c8d; }
+        .empty { text-align: center; padding: 40px; color: #999; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        @media (max-width: 760px) {
+            body { padding: 16px; }
+            .topbar { align-items: flex-start; flex-direction: column; }
+            table, thead, tbody, th, td, tr { display: block; }
+            thead { display: none; }
+            tr { border-bottom: 1px solid #e8e8e8; padding: 12px; }
+            td { border-bottom: none; padding: 6px 0; }
+            td::before { content: attr(data-label); display: block; font-weight: bold; color: #2c3e50; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="topbar">
-            <p>Sesion activa: <strong><%= currentUser ? currentUser.username : 'Usuario' %></strong></p>
+            <p>
+                Sesion activa: <strong><%= currentUser ? currentUser.username : 'Usuario' %></strong>
+                <span class="roles">Roles: <%= currentRoles.length ? currentRoles.join(', ') : 'sin rol' %></span>
+            </p>
             <div class="topbar-actions">
-                <a href="/add" class="btn btn-add">Agregar libro</a>
+                <% if (hasPermission('libros:create')) { %>
+                    <a href="/add" class="btn btn-add">Agregar libro</a>
+                <% } %>
                 <form action="/logout" method="POST">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <button type="submit" class="btn btn-logout">Cerrar sesion</button>
@@ -53,24 +70,37 @@
                         <th>Autor</th>
                         <th>Genero</th>
                         <th>Anio</th>
+                        <th>Calificacion</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <% libros.forEach(libro => { %>
                         <tr>
-                            <td><%= libro.titulo %></td>
-                            <td><%= libro.autor %></td>
-                            <td><%= libro.genero %></td>
-                            <td><%= libro.anio %></td>
-                            <td>
+                            <td data-label="Titulo"><%= libro.titulo %></td>
+                            <td data-label="Autor"><%= libro.autor %></td>
+                            <td data-label="Genero"><%= libro.genero || 'No especificado' %></td>
+                            <td data-label="Anio"><%= libro.anio || 'No especificado' %></td>
+                            <td data-label="Calificacion">
+                                <% if (Number(libro.total_resenas) > 0) { %>
+                                    <span class="rating"><%= Number(libro.promedio_calificacion).toFixed(1) %> / 5</span>
+                                    <span class="muted">(<%= libro.total_resenas %>)</span>
+                                <% } else { %>
+                                    <span class="muted">Sin resenas</span>
+                                <% } %>
+                            </td>
+                            <td data-label="Acciones">
                                 <div class="actions">
                                     <a href="/libro/<%= libro.id %>" class="btn btn-view">Ver</a>
-                                    <a href="/edit/<%= libro.id %>" class="btn btn-edit">Editar</a>
-                                    <form action="/delete/<%= libro.id %>" method="POST">
-                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                                        <button type="submit" class="btn btn-delete" onclick="return confirm('Eliminar este libro?')">Eliminar</button>
-                                    </form>
+                                    <% if (hasPermission('libros:update')) { %>
+                                        <a href="/edit/<%= libro.id %>" class="btn btn-edit">Editar</a>
+                                    <% } %>
+                                    <% if (hasPermission('libros:delete')) { %>
+                                        <form action="/delete/<%= libro.id %>" method="POST">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                            <button type="submit" class="btn btn-delete" onclick="return confirm('Eliminar este libro?')">Eliminar</button>
+                                        </form>
+                                    <% } %>
                                 </div>
                             </td>
                         </tr>

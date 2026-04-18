@@ -1,79 +1,157 @@
 const Libro = require('../models/Libro');
+const Resena = require('../models/Resena');
 
-// LISTAR TODOS (varios registros)
-exports.getLibros = (request, response, next) => {
-    Libro.fetchAll()
-        .then(([rows, fieldData]) => {
-            response.render('list', { libros: rows });
-        })
-        .catch(err => next(err));
+const renderDetalle = async (request, response, next, options = {}) => {
+    try {
+        const id = request.params.libro_id;
+        const [[libroRows], [resenas]] = await Promise.all([
+            Libro.fetchById(id),
+            Resena.fetchByLibroId(id)
+        ]);
+
+        if (libroRows.length === 0) {
+            return response.redirect('/');
+        }
+
+        return response.render('detail', {
+            libro: libroRows[0],
+            resenas,
+            reviewErrorMessage: options.reviewErrorMessage || null
+        });
+    } catch (error) {
+        return next(error);
+    }
 };
 
-// VER DETALLE (1 solo registro)
+exports.getLibros = async (request, response, next) => {
+    try {
+        const [rows] = await Libro.fetchAll();
+        response.render('list', { libros: rows });
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.getDetalle = (request, response, next) => {
-    const id = request.params.libro_id;
-    Libro.fetchById(id)
-        .then(([rows, fieldData]) => {
-            if (rows.length > 0) {
-                response.render('detail', { libro: rows[0] });
-            } else {
-                response.redirect('/');
-            }
-        })
-        .catch(err => next(err));
+    return renderDetalle(request, response, next);
 };
 
-// MOSTRAR FORM AGREGAR
 exports.getAdd = (request, response, next) => {
     response.render('add');
 };
 
-// INSERTAR LIBRO
-exports.postAdd = (request, response, next) => {
-    const libro = new Libro(
-        request.body.titulo,
-        request.body.autor,
-        request.body.genero,
-        request.body.anio
-    );
-    libro.save()
-        .then(() => {
-            response.redirect('/');
-        })
-        .catch(err => next(err));
+exports.postAdd = async (request, response, next) => {
+    try {
+        const titulo = (request.body.titulo || '').trim();
+        const autor = (request.body.autor || '').trim();
+        const genero = (request.body.genero || '').trim();
+        const anio = request.body.anio || null;
+
+        if (!titulo || !autor) {
+            return response.status(422).render('add', {
+                errorMessage: 'Captura titulo y autor.'
+            });
+        }
+
+        const libro = new Libro(titulo, autor, genero, anio);
+        await libro.save();
+
+        response.redirect('/');
+    } catch (error) {
+        next(error);
+    }
 };
 
-// MOSTRAR FORM EDITAR
-exports.getEdit = (request, response, next) => {
-    const id = request.params.libro_id;
-    Libro.fetchById(id)
-        .then(([rows, fieldData]) => {
-            if (rows.length > 0) {
-                response.render('edit', { libro: rows[0] });
-            } else {
-                response.redirect('/');
+exports.getEdit = async (request, response, next) => {
+    try {
+        const id = request.params.libro_id;
+        const [rows] = await Libro.fetchById(id);
+
+        if (rows.length === 0) {
+            return response.redirect('/');
+        }
+
+        response.render('edit', {
+            libro: rows[0],
+            errorMessage: null
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.postEdit = async (request, response, next) => {
+    try {
+        const id = request.params.libro_id;
+        const titulo = (request.body.titulo || '').trim();
+        const autor = (request.body.autor || '').trim();
+        const genero = (request.body.genero || '').trim();
+        const anio = request.body.anio || null;
+
+        if (!titulo || !autor) {
+            const [rows] = await Libro.fetchById(id);
+
+            if (rows.length === 0) {
+                return response.redirect('/');
             }
-        })
-        .catch(err => next(err));
+
+            return response.status(422).render('edit', {
+                libro: rows[0],
+                errorMessage: 'Captura titulo y autor.'
+            });
+        }
+
+        await Libro.update(id, titulo, autor, genero, anio);
+        response.redirect('/');
+    } catch (error) {
+        next(error);
+    }
 };
 
-// GUARDAR EDICIÓN
-exports.postEdit = (request, response, next) => {
-    const id = request.params.libro_id;
-    const { titulo, autor, genero, anio } = request.body;
-    Libro.update(id, titulo, autor, genero, anio)
-        .then(() => {
-            response.redirect('/');
-        })
-        .catch(err => next(err));
+exports.postDelete = async (request, response, next) => {
+    try {
+        const id = request.params.libro_id;
+        await Libro.deleteById(id);
+        response.redirect('/');
+    } catch (error) {
+        next(error);
+    }
 };
 
-// ELIMINAR
-exports.postDelete = (request, response, next) => {
-    const id = request.params.libro_id;
-    Libro.deleteById(id)
-        .then(() => {
-            response.redirect('/');
-        })
-        .catch(err => next(err));
+exports.postResena = async (request, response, next) => {
+    const calificacion = Number.parseInt(request.body.calificacion, 10);
+    const comentario = (request.body.comentario || '').trim();
+
+    if (!Number.isInteger(calificacion) || calificacion < 1 || calificacion > 5 || !comentario) {
+        return renderDetalle(request, response.status(422), next, {
+            reviewErrorMessage: 'La resena requiere comentario y calificacion entre 1 y 5.'
+        });
+    }
+
+    try {
+        const resena = new Resena(
+            request.params.libro_id,
+            request.session.user.id,
+            calificacion,
+            comentario
+        );
+
+        await resena.save();
+        response.redirect(`/libro/${request.params.libro_id}`);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.postDeleteResena = async (request, response, next) => {
+    try {
+        await Resena.deleteByIdForLibro(
+            request.params.resena_id,
+            request.params.libro_id
+        );
+
+        response.redirect(`/libro/${request.params.libro_id}`);
+    } catch (error) {
+        next(error);
+    }
 };
