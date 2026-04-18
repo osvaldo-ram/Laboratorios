@@ -13,17 +13,18 @@ const statsJoin = `
 `;
 
 module.exports = class Libro {
-    constructor(titulo, autor, genero, anio) {
+    constructor(titulo, autor, genero, anio, imagen) {
         this.titulo = titulo;
         this.autor = autor;
         this.genero = genero;
         this.anio = anio || null;
+        this.imagen = imagen || null;
     }
 
     save() {
         return db.execute(
-            'INSERT INTO libros (titulo, autor, genero, anio) VALUES (?, ?, ?, ?)',
-            [this.titulo, this.autor, this.genero || null, this.anio]
+            'INSERT INTO libros (titulo, autor, genero, anio, imagen) VALUES (?, ?, ?, ?, ?)',
+            [this.titulo, this.autor, this.genero || null, this.anio, this.imagen]
         );
     }
 
@@ -52,10 +53,10 @@ module.exports = class Libro {
         );
     }
 
-    static update(id, titulo, autor, genero, anio) {
+    static update(id, titulo, autor, genero, anio, imagen) {
         return db.execute(
-            'UPDATE libros SET titulo = ?, autor = ?, genero = ?, anio = ? WHERE id = ?',
-            [titulo, autor, genero || null, anio || null, id]
+            'UPDATE libros SET titulo = ?, autor = ?, genero = ?, anio = ?, imagen = ? WHERE id = ?',
+            [titulo, autor, genero || null, anio || null, imagen || null, id]
         );
     }
 

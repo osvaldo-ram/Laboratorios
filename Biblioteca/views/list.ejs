@@ -24,6 +24,8 @@
         td { padding: 12px 14px; border-bottom: 1px solid #eee; vertical-align: middle; }
         tr:hover { background: #f9f9f9; }
         .actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .cover-thumb { width: 56px; height: 76px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd; display: block; background: #eef2f7; }
+        .cover-placeholder { width: 56px; height: 76px; border-radius: 6px; border: 1px solid #d6e2ee; background: #f4f8fb; color: #7f8c8d; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 12px; line-height: 1.2; }
         .rating { color: #2c3e50; font-weight: 600; }
         .muted { color: #7f8c8d; }
         .empty { text-align: center; padding: 40px; color: #999; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -66,6 +68,7 @@
             <table>
                 <thead>
                     <tr>
+                        <th>Portada</th>
                         <th>Titulo</th>
                         <th>Autor</th>
                         <th>Genero</th>
@@ -77,6 +80,13 @@
                 <tbody>
                     <% libros.forEach(libro => { %>
                         <tr>
+                            <td data-label="Portada">
+                                <% if (libro.imagen) { %>
+                                    <img class="cover-thumb" src="/<%= libro.imagen %>" alt="Portada de <%= libro.titulo %>">
+                                <% } else { %>
+                                    <div class="cover-placeholder">Sin<br>portada</div>
+                                <% } %>
+                            </td>
                             <td data-label="Titulo"><%= libro.titulo %></td>
                             <td data-label="Autor"><%= libro.autor %></td>
                             <td data-label="Genero"><%= libro.genero || 'No especificado' %></td>

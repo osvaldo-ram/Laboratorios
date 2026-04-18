@@ -76,6 +76,7 @@ CREATE TABLE `libros` (
   `autor` varchar(255) NOT NULL,
   `genero` varchar(100) DEFAULT NULL,
   `anio` int(11) DEFAULT NULL,
+  `imagen` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -131,13 +132,13 @@ INSERT INTO `usuarios_roles` (`usuario_id`, `rol_id`) VALUES
 (1, 1),
 (2, 2);
 
-INSERT INTO `libros` (`id`, `titulo`, `autor`, `genero`, `anio`, `created_at`) VALUES
-(1, 'Cien anos de Soledad', 'Gabriel Garcia Marquez', 'Realismo magico', 1967, '2026-04-07 18:19:37'),
-(2, '1984', 'George Orwell', 'Distopia', 1949, '2026-04-07 18:19:37'),
-(3, 'El Principito', 'Antoine de Saint-Exupery', 'Fabula', 1943, '2026-04-07 18:19:37'),
-(4, 'Don Quijote de la Mancha', 'Miguel de Cervantes', 'Novela', 1605, '2026-04-07 18:19:37'),
-(5, 'Fahrenheit 451', 'Ray Bradbury', 'Ciencia ficcion', 1953, '2026-04-17 18:20:00'),
-(6, 'La sombra del viento', 'Carlos Ruiz Zafon', 'Misterio', 2001, '2026-04-17 18:25:00');
+INSERT INTO `libros` (`id`, `titulo`, `autor`, `genero`, `anio`, `imagen`, `created_at`) VALUES
+(1, 'Cien anos de Soledad', 'Gabriel Garcia Marquez', 'Realismo magico', 1967, NULL, '2026-04-07 18:19:37'),
+(2, '1984', 'George Orwell', 'Distopia', 1949, NULL, '2026-04-07 18:19:37'),
+(3, 'El Principito', 'Antoine de Saint-Exupery', 'Fabula', 1943, NULL, '2026-04-07 18:19:37'),
+(4, 'Don Quijote de la Mancha', 'Miguel de Cervantes', 'Novela', 1605, NULL, '2026-04-07 18:19:37'),
+(5, 'Fahrenheit 451', 'Ray Bradbury', 'Ciencia ficcion', 1953, NULL, '2026-04-17 18:20:00'),
+(6, 'La sombra del viento', 'Carlos Ruiz Zafon', 'Misterio', 2001, NULL, '2026-04-17 18:25:00');
 
 INSERT INTO `resenas` (`id`, `libro_id`, `usuario_id`, `calificacion`, `comentario`, `created_at`) VALUES
 (1, 1, 2, 5, 'Una novela excelente para discutir narrativa latinoamericana.', '2026-04-17 18:30:00'),

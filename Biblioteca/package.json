@@ -4,7 +4,7 @@
   "description": "CRUD simple de biblioteca con Express, EJS y MySQL.",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "set PORT=3001&& node app.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -12,6 +12,7 @@
     "ejs": "^3.1.10",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
+    "multer": "^2.1.1",
     "mysql2": "^3.14.1"
   }
 }

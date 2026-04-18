@@ -46,6 +46,7 @@ exports.postAdd = async (request, response, next) => {
         const autor = (request.body.autor || '').trim();
         const genero = (request.body.genero || '').trim();
         const anio = request.body.anio || null;
+        const imagen = request.file ? `uploads/${request.file.filename}` : null;
 
         if (!titulo || !autor) {
             return response.status(422).render('add', {
@@ -53,7 +54,7 @@ exports.postAdd = async (request, response, next) => {
             });
         }
 
-        const libro = new Libro(titulo, autor, genero, anio);
+        const libro = new Libro(titulo, autor, genero, anio, imagen);
         await libro.save();
 
         response.redirect('/');
@@ -87,21 +88,22 @@ exports.postEdit = async (request, response, next) => {
         const autor = (request.body.autor || '').trim();
         const genero = (request.body.genero || '').trim();
         const anio = request.body.anio || null;
+        const [rows] = await Libro.fetchById(id);
+
+        if (rows.length === 0) {
+            return response.redirect('/');
+        }
 
         if (!titulo || !autor) {
-            const [rows] = await Libro.fetchById(id);
-
-            if (rows.length === 0) {
-                return response.redirect('/');
-            }
-
             return response.status(422).render('edit', {
                 libro: rows[0],
                 errorMessage: 'Captura titulo y autor.'
             });
         }
 
-        await Libro.update(id, titulo, autor, genero, anio);
+        const imagen = request.file ? `uploads/${request.file.filename}` : rows[0].imagen;
+
+        await Libro.update(id, titulo, autor, genero, anio, imagen);
         response.redirect('/');
     } catch (error) {
         next(error);

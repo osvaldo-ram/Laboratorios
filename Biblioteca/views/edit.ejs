@@ -16,6 +16,9 @@
         h1 { margin-bottom: 20px; color: #2c3e50; }
         label { display: block; margin-top: 15px; font-weight: bold; color: #555; }
         input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .hint { color: #7f8c8d; font-size: 13px; margin-top: 6px; }
+        .current-cover { margin-top: 10px; }
+        .current-cover img { width: 130px; max-width: 100%; border-radius: 6px; display: block; border: 1px solid #ddd; }
         button { margin-top: 20px; padding: 12px 24px; background: #f39c12; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
         .logout-btn { margin-top: 0; padding: 8px 16px; font-size: 14px; background: #2c3e50; }
         .message { border-radius: 6px; padding: 12px 14px; margin-bottom: 16px; background: #fdecea; color: #b03a2e; }
@@ -41,7 +44,7 @@
                 <div class="message"><%= errorMessage %></div>
             <% } %>
 
-            <form action="/edit/<%= libro.id %>" method="POST">
+            <form action="/edit/<%= libro.id %>" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
                 <label>Titulo:</label>
@@ -55,6 +58,17 @@
 
                 <label>Anio:</label>
                 <input type="number" name="anio" value="<%= libro.anio %>">
+
+                <label>Portada:</label>
+                <% if (libro.imagen) { %>
+                    <div class="current-cover">
+                        <img src="/<%= libro.imagen %>" alt="Portada de <%= libro.titulo %>">
+                    </div>
+                <% } else { %>
+                    <p class="hint">Este libro aun no tiene portada.</p>
+                <% } %>
+                <input type="file" name="archivo" accept="image/png,image/jpg,image/jpeg">
+                <p class="hint">Si no subes una nueva imagen, se conserva la portada actual.</p>
 
                 <button type="submit">Guardar Cambios</button>
             </form>
