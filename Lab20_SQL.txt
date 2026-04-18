@@ -1,0 +1,149 @@
+LABORATORIO 20 – CONSULTAS EN SQL 
+-- JOIN
+SELECT * 
+FROM materiales m, entregan e
+WHERE m.clave = e.clave;
+
+-- UNION equivalente
+SELECT *
+FROM entregan
+WHERE clave = 1450 OR clave = 1300;
+
+-- MINUS equivalente
+SELECT * 
+FROM entregan
+WHERE clave <> 1000;
+
+-- Fecha y materiales 2000
+SET DATEFORMAT dmy;
+
+SELECT m.descripcion
+FROM entregan e, materiales m
+WHERE m.clave = e.clave
+AND e.fecha >= '01/01/2000'
+AND e.fecha < '01/01/2001';
+
+-- DISTINCT
+SELECT DISTINCT m.descripcion
+FROM entregan e, materiales m
+WHERE m.clave = e.clave
+AND e.fecha >= '01/01/2000'
+AND e.fecha < '01/01/2001';
+
+-- ORDER BY
+SELECT p.numero, p.denominacion, e.fecha, e.cantidad
+FROM proyectos p, entregan e
+WHERE e.numero = p.numero
+ORDER BY p.numero ASC, e.fecha DESC;
+
+-- LIKE
+SELECT * 
+FROM materiales
+WHERE descripcion LIKE 'Si%';
+
+-- BETWEEN
+SELECT Clave, RFC, Numero, Fecha, Cantidad
+FROM Entregan
+WHERE Numero BETWEEN 5000 AND 5010
+AND Fecha BETWEEN '01/01/2000' AND '31/12/2000';
+
+-- EXISTS
+SELECT RFC,Cantidad, Fecha,Numero
+FROM Entregan
+WHERE Numero Between 5000 and 5010 AND
+Exists ( SELECT RFC FROM Proveedores WHERE RazonSocial LIKE 'La%' and Entregan.RFC = Proveedores.RFC );
+
+-- IN
+SELECT RFC, Cantidad, Fecha, Numero
+FROM Entregan
+WHERE Numero Between 5000 and 5010
+AND RFC IN (SELECT RFC FROM Proveedores WHERE RazonSocial LIKE 'La%');
+
+-- NOT IN
+SELECT RFC, Cantidad, Fecha, Numero
+FROM Entregan
+WHERE Numero Between 5000 and 5010
+AND RFC NOT IN (SELECT RFC FROM Proveedores WHERE RazonSocial LIKE 'La%');
+
+-- TOP
+SELECT TOP 2 * FROM Proyectos;
+
+-- ALTER TABLE
+ALTER TABLE materiales 
+ADD PorcentajeImpuesto NUMERIC(6,2);
+
+UPDATE materiales 
+SET PorcentajeImpuesto = 2 * clave / 1000;
+
+-- Importe total
+SELECT e.clave, e.numero, e.cantidad, m.costo, m.PorcentajeImpuesto,
+       e.cantidad * m.costo * (1 + m.PorcentajeImpuesto / 100.0) AS ImporteTotal
+FROM entregan e, materiales m
+WHERE m.clave = e.clave;
+
+-- Materiales por proyecto
+SELECT DISTINCT m.clave, m.descripcion
+FROM materiales m, entregan e, proyectos p
+WHERE m.clave = e.clave
+AND p.numero = e.numero
+AND p.denominacion = 'México sin ti no estamos completos';
+
+-- Materiales por proveedor
+SELECT DISTINCT m.clave, m.descripcion
+FROM materiales m, entregan e, proveedores p
+WHERE m.clave = e.clave
+AND p.RFC = e.RFC
+AND p.RazonSocial = 'Acme tools';
+
+-- Promedio proveedores
+SELECT e.RFC
+FROM entregan e
+WHERE e.fecha BETWEEN '01/01/2000' AND '31/12/2000'
+GROUP BY e.RFC
+HAVING AVG(e.cantidad) >= 300;
+
+-- Total por material
+SELECT e.clave, SUM(e.cantidad) AS TotalCantidad2000
+FROM entregan e
+WHERE e.fecha BETWEEN '01/01/2000' AND '31/12/2000'
+GROUP BY e.clave;
+
+-- Vista
+CREATE VIEW vTotales2001 AS
+SELECT e.clave, SUM(e.cantidad) AS Total2001
+FROM entregan e
+WHERE e.fecha BETWEEN '01/01/2001' AND '31/12/2001'
+GROUP BY e.clave;
+
+-- Total por proyecto
+SELECT p.denominacion, SUM(e.cantidad * m.costo) AS TotalPagar
+FROM proyectos p, entregan e, materiales m
+WHERE e.numero = p.numero
+AND m.clave = e.clave
+GROUP BY p.denominacion;
+
+-- Proveedores filtrados
+SELECT DISTINCT p.denominacion, e.RFC, prov.RazonSocial
+FROM entregan e, proyectos p, proveedores prov
+WHERE p.numero = e.numero
+AND prov.RFC = e.RFC
+AND p.denominacion = 'Televisa en acción'
+AND e.RFC NOT IN (
+    SELECT e2.RFC
+    FROM entregan e2, proyectos p2
+    WHERE p2.numero = e2.numero
+    AND p2.denominacion = 'Educando en Coahuila'
+);
+
+-- Materiales en ambos proyectos
+SELECT DISTINCT m.costo, m.clave, m.descripcion
+FROM entregan e, materiales m, proyectos p
+WHERE m.clave = e.clave
+AND p.numero = e.numero
+AND p.denominacion = 'Televisa en acción'
+AND e.RFC IN (
+    SELECT e2.RFC
+    FROM entregan e2, proyectos p2
+    WHERE p2.numero = e2.numero
+    AND p2.denominacion = 'Educando en Coahuila'
+);
