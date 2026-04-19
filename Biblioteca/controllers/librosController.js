@@ -1,20 +1,33 @@
 const Libro = require('../models/Libro');
 const Resena = require('../models/Resena');
 
+const wantsJson = request => {
+    return request.is('application/json') || (request.get('accept') || '').includes('application/json');
+};
+
+const getDetalleData = async libroId => {
+    const [[libroRows], [resenas]] = await Promise.all([
+        Libro.fetchById(libroId),
+        Resena.fetchByLibroId(libroId)
+    ]);
+
+    return {
+        libro: libroRows[0] || null,
+        resenas
+    };
+};
+
 const renderDetalle = async (request, response, next, options = {}) => {
     try {
         const id = request.params.libro_id;
-        const [[libroRows], [resenas]] = await Promise.all([
-            Libro.fetchById(id),
-            Resena.fetchByLibroId(id)
-        ]);
+        const { libro, resenas } = await getDetalleData(id);
 
-        if (libroRows.length === 0) {
+        if (!libro) {
             return response.redirect('/');
         }
 
         return response.render('detail', {
-            libro: libroRows[0],
+            libro,
             resenas,
             reviewErrorMessage: options.reviewErrorMessage || null
         });
@@ -34,6 +47,10 @@ exports.getLibros = async (request, response, next) => {
 
 exports.getDetalle = (request, response, next) => {
     return renderDetalle(request, response, next);
+};
+
+exports.getPreguntas = (request, response) => {
+    response.render('preguntas');
 };
 
 exports.getAdd = (request, response, next) => {
@@ -121,10 +138,17 @@ exports.postDelete = async (request, response, next) => {
 };
 
 exports.postResena = async (request, response, next) => {
+    const jsonResponse = wantsJson(request);
     const calificacion = Number.parseInt(request.body.calificacion, 10);
     const comentario = (request.body.comentario || '').trim();
 
     if (!Number.isInteger(calificacion) || calificacion < 1 || calificacion > 5 || !comentario) {
+        if (jsonResponse) {
+            return response.status(422).json({
+                message: 'La resena requiere comentario y calificacion entre 1 y 5.'
+            });
+        }
+
         return renderDetalle(request, response.status(422), next, {
             reviewErrorMessage: 'La resena requiere comentario y calificacion entre 1 y 5.'
         });
@@ -139,6 +163,24 @@ exports.postResena = async (request, response, next) => {
         );
 
         await resena.save();
+
+        if (jsonResponse) {
+            const { libro, resenas } = await getDetalleData(request.params.libro_id);
+
+            if (!libro) {
+                return response.status(404).json({
+                    message: 'No se encontro el libro solicitado.'
+                });
+            }
+
+            return response.status(200).json({
+                message: 'Resena guardada sin recargar la pagina.',
+                libro,
+                resenas,
+                ajaxComponent: 'Formulario de resenas con fetch, JSON y actualizacion del DOM.'
+            });
+        }
+
         response.redirect(`/libro/${request.params.libro_id}`);
     } catch (error) {
         next(error);

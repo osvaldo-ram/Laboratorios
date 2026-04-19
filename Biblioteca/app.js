@@ -3,6 +3,7 @@ const path = require('path');
 const session = require('express-session');
 const csrf = require('csurf');
 const multer = require('multer');
+const bodyParser = require('body-parser');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -35,6 +36,7 @@ const fileFilter = (request, file, callback) => {
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(multer({
     storage: fileStorage,
@@ -73,6 +75,12 @@ app.use('/', librosRoutes);
 
 app.use((error, request, response, next) => {
     if (error.code === 'EBADCSRFTOKEN') {
+        if (request.is('application/json') || (request.get('accept') || '').includes('application/json')) {
+            return response.status(403).json({
+                message: 'Token CSRF invalido o expirado. Recarga la pagina e intenta de nuevo.'
+            });
+        }
+
         return response.status(403).send('Token CSRF invalido o expirado. Recarga la pagina e intenta de nuevo.');
     }
 

@@ -11,6 +11,7 @@
         .topbar a { color: #3498db; text-decoration: none; }
         .topbar p { color: #34495e; }
         .topbar strong { color: #2c3e50; }
+        .topbar-links { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
         .topbar-actions { display: flex; gap: 10px; align-items: center; }
         .panel { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .book-main { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 24px; align-items: start; }
@@ -31,11 +32,16 @@
         select, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; font-family: inherit; }
         textarea { min-height: 100px; resize: vertical; }
         .message { border-radius: 6px; padding: 12px 14px; margin-bottom: 16px; background: #fdecea; color: #b03a2e; }
+        .message.success { background: #e9f7ef; color: #1f7a43; }
+        .message:empty { display: none; }
+        .review-editor { display: grid; gap: 12px; }
         .review { border-top: 1px solid #eee; padding: 16px 0; }
         .review:first-of-type { border-top: none; padding-top: 0; }
         .review-head { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 8px; }
         .rating { color: #2c3e50; font-weight: 700; }
         .muted { color: #7f8c8d; }
+        .ajax-note p { margin-bottom: 10px; line-height: 1.5; }
+        .ajax-note ul { padding-left: 20px; line-height: 1.6; }
         @media (max-width: 680px) {
             body { padding: 16px; }
             .topbar { align-items: flex-start; flex-direction: column; }
@@ -47,7 +53,10 @@
 <body>
     <div class="page">
         <div class="topbar">
-            <a href="/">&larr; Volver</a>
+            <div class="topbar-links">
+                <a href="/">&larr; Volver</a>
+                <a href="/preguntas">Preguntas y AJAX</a>
+            </div>
             <div class="topbar-actions">
                 <p>Sesion activa: <strong><%= currentUser ? currentUser.username : 'Usuario' %></strong></p>
                 <form action="/logout" method="POST">
@@ -76,12 +85,14 @@
                     <div class="info"><span>Registrado:</span> <%= libro.created_at %></div>
                     <div class="info">
                         <span>Calificacion:</span>
-                        <% if (Number(libro.total_resenas) > 0) { %>
-                            <%= Number(libro.promedio_calificacion).toFixed(1) %> / 5
-                            <span class="muted">(<%= libro.total_resenas %> resenas)</span>
-                        <% } else { %>
-                            <span class="muted">Sin resenas</span>
-                        <% } %>
+                        <span id="rating-summary">
+                            <% if (Number(libro.total_resenas) > 0) { %>
+                                <%= Number(libro.promedio_calificacion).toFixed(1) %> / 5
+                                (<%= libro.total_resenas %> resenas)
+                            <% } else { %>
+                                Sin resenas
+                            <% } %>
+                        </span>
                     </div>
 
                     <% if (hasPermission('libros:update') || hasPermission('libros:delete')) { %>
@@ -104,17 +115,24 @@
         <% if (hasPermission('resenas:create')) { %>
             <% const myReview = resenas.find(resena => currentUser && resena.usuario_id === currentUser.id); %>
             <div class="panel">
-                <h2><%= myReview ? 'Actualizar resena' : 'Agregar resena' %></h2>
+                <h2 id="review-form-title"><%= myReview ? 'Actualizar resena' : 'Agregar resena' %></h2>
 
                 <% if (reviewErrorMessage) { %>
                     <div class="message"><%= reviewErrorMessage %></div>
                 <% } %>
 
-                <form action="/libro/<%= libro.id %>/resenas" method="POST">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <div id="review-status" class="message" aria-live="polite"></div>
 
-                    <label>Calificacion:</label>
-                    <select name="calificacion" required>
+                <div
+                    id="review-editor"
+                    class="review-editor"
+                    data-libro-id="<%= libro.id %>"
+                    data-can-delete-reviews="<%= hasPermission('resenas:delete') ? 'true' : 'false' %>"
+                >
+                    <input type="hidden" id="review-csrf" value="<%= csrfToken %>">
+
+                    <label for="review-rating">Calificacion:</label>
+                    <select id="review-rating" name="calificacion" required>
                         <% for (let rating = 1; rating <= 5; rating++) { %>
                             <option value="<%= rating %>" <%= myReview && Number(myReview.calificacion) === rating ? 'selected' : '' %>>
                                 <%= rating %>
@@ -122,41 +140,225 @@
                         <% } %>
                     </select>
 
-                    <label>Comentario:</label>
-                    <textarea name="comentario" required><%= myReview ? myReview.comentario : '' %></textarea>
+                    <label for="review-comment">Comentario:</label>
+                    <textarea id="review-comment" name="comentario" required><%= myReview ? myReview.comentario : '' %></textarea>
 
-                    <button type="submit" class="btn btn-save"><%= myReview ? 'Actualizar resena' : 'Guardar resena' %></button>
-                </form>
+                    <button type="button" id="review-submit" class="btn btn-save"><%= myReview ? 'Actualizar resena' : 'Guardar resena' %></button>
+                </div>
             </div>
         <% } %>
 
         <div class="panel">
             <h2>Resenas</h2>
 
-            <% if (resenas.length === 0) { %>
-                <p class="muted">Este libro aun no tiene resenas.</p>
-            <% } else { %>
-                <% resenas.forEach(resena => { %>
-                    <div class="review">
-                        <div class="review-head">
-                            <div>
-                                <strong><%= resena.username %></strong>
-                                <span class="rating"><%= resena.calificacion %> / 5</span>
+            <div id="reviews-container">
+                <% if (resenas.length === 0) { %>
+                    <p class="muted">Este libro aun no tiene resenas.</p>
+                <% } else { %>
+                    <% resenas.forEach(resena => { %>
+                        <div class="review">
+                            <div class="review-head">
+                                <div>
+                                    <strong><%= resena.username %></strong>
+                                    <span class="rating"><%= resena.calificacion %> / 5</span>
+                                </div>
+                                <span class="muted"><%= resena.updated_at || resena.created_at %></span>
                             </div>
-                            <span class="muted"><%= resena.updated_at || resena.created_at %></span>
-                        </div>
-                        <p><%= resena.comentario %></p>
+                            <p><%= resena.comentario %></p>
 
-                        <% if (hasPermission('resenas:delete')) { %>
-                            <form action="/libro/<%= libro.id %>/resenas/<%= resena.id %>/delete" method="POST" class="actions">
-                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                                <button type="submit" class="btn btn-delete" onclick="return confirm('Eliminar esta resena?')">Eliminar resena</button>
-                            </form>
-                        <% } %>
-                    </div>
-                <% }) %>
-            <% } %>
+                            <% if (hasPermission('resenas:delete')) { %>
+                                <form action="/libro/<%= libro.id %>/resenas/<%= resena.id %>/delete" method="POST" class="actions">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <button type="submit" class="btn btn-delete" onclick="return confirm('Eliminar esta resena?')">Eliminar resena</button>
+                                </form>
+                            <% } %>
+                        </div>
+                    <% }) %>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="panel ajax-note">
+            <h2>Componente AJAX utilizado</h2>
+            <p>La captura de resenas usa AJAX: el boton envia una peticion fetch en formato JSON al servidor y la pagina actualiza la calificacion promedio y la lista de resenas sin recargar.</p>
+            <ul>
+                <li>Cliente: fetch con metodo POST, Content-Type application/json y token CSRF en el header.</li>
+                <li>Servidor: ruta MVC de resenas, controlador con respuesta JSON y modelo conectado a MySQL.</li>
+                <li>DOM actualizado: mensaje de estado, promedio del libro y listado completo de resenas.</li>
+            </ul>
         </div>
     </div>
+
+    <script>
+        (() => {
+            const editor = document.getElementById('review-editor');
+
+            if (!editor) {
+                return;
+            }
+
+            const libroId = editor.dataset.libroId;
+            const canDeleteReviews = editor.dataset.canDeleteReviews === 'true';
+            const csrfInput = document.getElementById('review-csrf');
+            const ratingSelect = document.getElementById('review-rating');
+            const commentInput = document.getElementById('review-comment');
+            const submitButton = document.getElementById('review-submit');
+            const statusBox = document.getElementById('review-status');
+            const reviewsContainer = document.getElementById('reviews-container');
+            const ratingSummary = document.getElementById('rating-summary');
+            const title = document.getElementById('review-form-title');
+
+            const setStatus = (message, type) => {
+                statusBox.textContent = message;
+                statusBox.classList.toggle('success', type === 'success');
+            };
+
+            const formatDate = value => {
+                if (!value) {
+                    return 'Sin fecha';
+                }
+
+                const date = new Date(value);
+
+                if (Number.isNaN(date.getTime())) {
+                    return value;
+                }
+
+                return date.toLocaleString('es-MX', {
+                    dateStyle: 'medium',
+                    timeStyle: 'short'
+                });
+            };
+
+            const renderRatingSummary = libro => {
+                const total = Number(libro.total_resenas || 0);
+                const promedio = Number(libro.promedio_calificacion || 0);
+                const plural = total === 1 ? 'resena' : 'resenas';
+
+                ratingSummary.textContent = total > 0
+                    ? `${promedio.toFixed(1)} / 5 (${total} ${plural})`
+                    : 'Sin resenas';
+            };
+
+            const createDeleteForm = resena => {
+                const form = document.createElement('form');
+                form.className = 'actions';
+                form.method = 'POST';
+                form.action = `/libro/${libroId}/resenas/${resena.id}/delete`;
+
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_csrf';
+                csrf.value = csrfInput.value;
+
+                const button = document.createElement('button');
+                button.type = 'submit';
+                button.className = 'btn btn-delete';
+                button.textContent = 'Eliminar resena';
+                button.addEventListener('click', event => {
+                    if (!window.confirm('Eliminar esta resena?')) {
+                        event.preventDefault();
+                    }
+                });
+
+                form.append(csrf, button);
+                return form;
+            };
+
+            const createReviewElement = resena => {
+                const review = document.createElement('div');
+                review.className = 'review';
+
+                const head = document.createElement('div');
+                head.className = 'review-head';
+
+                const author = document.createElement('div');
+                const username = document.createElement('strong');
+                username.textContent = resena.username;
+
+                const rating = document.createElement('span');
+                rating.className = 'rating';
+                rating.textContent = `${resena.calificacion} / 5`;
+
+                author.append(username, ' ', rating);
+
+                const date = document.createElement('span');
+                date.className = 'muted';
+                date.textContent = formatDate(resena.updated_at || resena.created_at);
+
+                head.append(author, date);
+
+                const comment = document.createElement('p');
+                comment.textContent = resena.comentario;
+
+                review.append(head, comment);
+
+                if (canDeleteReviews) {
+                    review.append(createDeleteForm(resena));
+                }
+
+                return review;
+            };
+
+            const renderReviews = resenas => {
+                reviewsContainer.replaceChildren();
+
+                if (resenas.length === 0) {
+                    const empty = document.createElement('p');
+                    empty.className = 'muted';
+                    empty.textContent = 'Este libro aun no tiene resenas.';
+                    reviewsContainer.append(empty);
+                    return;
+                }
+
+                resenas.forEach(resena => {
+                    reviewsContainer.append(createReviewElement(resena));
+                });
+            };
+
+            const saveReview = async () => {
+                const calificacion = Number.parseInt(ratingSelect.value, 10);
+                const comentario = commentInput.value.trim();
+
+                if (!Number.isInteger(calificacion) || calificacion < 1 || calificacion > 5 || !comentario) {
+                    setStatus('Captura comentario y calificacion entre 1 y 5.', 'error');
+                    return;
+                }
+
+                submitButton.disabled = true;
+                setStatus('Guardando resena...', 'loading');
+
+                try {
+                    const result = await fetch(`/libro/${libroId}/resenas`, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'csrf-token': csrfInput.value
+                        },
+                        body: JSON.stringify({ calificacion, comentario })
+                    });
+
+                    const data = await result.json().catch(() => ({}));
+
+                    if (!result.ok) {
+                        throw new Error(data.message || 'No se pudo guardar la resena.');
+                    }
+
+                    renderRatingSummary(data.libro);
+                    renderReviews(data.resenas);
+                    title.textContent = 'Actualizar resena';
+                    submitButton.textContent = 'Actualizar resena';
+                    setStatus(data.message || 'Resena guardada sin recargar la pagina.', 'success');
+                } catch (error) {
+                    setStatus(error.message, 'error');
+                } finally {
+                    submitButton.disabled = false;
+                }
+            };
+
+            submitButton.addEventListener('click', saveReview);
+        })();
+    </script>
 </body>
 </html>

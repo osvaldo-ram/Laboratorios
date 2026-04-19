@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Preguntas y AJAX</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 30px; color: #2c3e50; }
+        .page { max-width: 920px; margin: 0 auto; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; background: white; padding: 18px 22px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .topbar a { color: #3498db; text-decoration: none; }
+        .topbar p { color: #34495e; }
+        .topbar strong { color: #2c3e50; }
+        .logout-btn { padding: 8px 16px; font-size: 14px; background: #2c3e50; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        h1 { margin-bottom: 18px; color: #2c3e50; }
+        h2 { margin-bottom: 10px; color: #2c3e50; }
+        .panel { background: white; padding: 26px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 18px; }
+        .panel p { line-height: 1.6; margin-bottom: 10px; }
+        .panel ul { padding-left: 22px; line-height: 1.7; }
+        .muted { color: #697783; }
+        @media (max-width: 680px) {
+            body { padding: 16px; }
+            .topbar { align-items: flex-start; flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="topbar">
+            <a href="/">&larr; Volver a biblioteca</a>
+            <div>
+                <p>Sesion activa: <strong><%= currentUser ? currentUser.username : 'Usuario' %></strong></p>
+                <form action="/logout" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="submit" class="logout-btn">Cerrar sesion</button>
+                </form>
+            </div>
+        </div>
+
+        <h1>Preguntas y componente AJAX</h1>
+
+        <div class="panel">
+            <h2>Componente AJAX usado</h2>
+            <p>El componente AJAX esta en la pagina de detalle de cada libro. Sirve para crear o actualizar una resena sin recargar la pagina.</p>
+            <ul>
+                <li>El cliente toma calificacion, comentario y token CSRF, y los manda con fetch como JSON.</li>
+                <li>El servidor recibe la peticion en una ruta MVC, guarda la resena con el modelo y responde con JSON.</li>
+                <li>La vista actualiza el promedio del libro, el mensaje de estado y la lista de resenas directamente en el DOM.</li>
+            </ul>
+        </div>
+
+        <div class="panel">
+            <h2>1. Ventajas de escribir SQL solo en el modelo</h2>
+            <p>El codigo queda mas ordenado porque cada capa hace su trabajo: el modelo maneja datos, el controlador coordina la logica y la vista presenta informacion.</p>
+            <p>Tambien mejora el mantenimiento. Si cambia una consulta, se modifica en el modelo sin buscar SQL mezclado en rutas, controladores o vistas. Ademas, facilita reutilizar consultas y aplicar practicas seguras como placeholders para reducir riesgos de inyeccion SQL.</p>
+        </div>
+
+        <div class="panel">
+            <h2>2. SQL Injection y prevencion</h2>
+            <p>SQL Injection es una vulnerabilidad donde un usuario manda texto malicioso para alterar una consulta SQL. Por ejemplo, si se concatena una entrada directamente en una consulta, alguien podria cambiar la condicion de acceso o leer datos que no le corresponden.</p>
+            <p>Se previene usando consultas parametrizadas, validando datos de entrada y limitando los permisos del usuario de base de datos.</p>
+        </div>
+
+        <div class="panel">
+            <h2>3. Otras formas de autenticacion</h2>
+            <p>Ademas de usuario y contrasena, existen JWT, OAuth con proveedores como Google o GitHub, autenticacion de dos factores, enlaces magicos por correo, biometria y passkeys.</p>
+        </div>
+
+        <div class="panel">
+            <h2>4. Control de acceso basado en roles</h2>
+            <p>RBAC consiste en asignar permisos a roles y despues asignar esos roles a los usuarios. En esta biblioteca, un usuario puede consultar libros y escribir resenas, mientras que un administrador puede agregar, editar o eliminar libros y borrar resenas.</p>
+            <p>Esto hace que el sistema sea mas seguro y facil de administrar porque cada usuario recibe solo los permisos necesarios para su funcion.</p>
+        </div>
+
+        <div class="panel">
+            <h2>5. Sistema con RBAC y sistema sin RBAC</h2>
+            <p>Un ejemplo con RBAC es Google Workspace, donde hay roles de administrador y usuario con permisos distintos. La ventaja es que el acceso se controla de forma clara y escalable; la desventaja es que requiere configuracion cuidadosa.</p>
+            <p>Un sistema sin RBAC seria un blog muy simple donde todos los usuarios tienen los mismos permisos. Es facil de implementar, pero el control de acceso es debil porque cualquier usuario podria hacer acciones sensibles.</p>
+            <p class="muted">Conclusion: RBAC conviene cuando hay informacion importante o diferentes responsabilidades; sin RBAC solo tiene sentido en aplicaciones muy pequenas y de bajo riesgo.</p>
+        </div>
+
+        <div class="panel">
+            <h2>6. Importancia de AJAX en RIA</h2>
+            <p>AJAX es importante en las RIA porque permite que una pagina se comunique con el servidor sin tener que recargarse completa cada vez que el usuario hace algo. Eso hace que la aplicacion se sienta mas rapida y fluida, casi como una aplicacion de escritorio, porque solo se actualiza la parte necesaria de la interfaz.</p>
+            <p>En esta biblioteca se nota con las resenas: el usuario guarda su comentario, el servidor responde con datos JSON y la pagina actualiza la calificacion y la lista de resenas sin perder el contexto donde estaba.</p>
+        </div>
+
+        <div class="panel">
+            <h2>7. Seguridad en AJAX</h2>
+            <p>AJAX no elimina los riesgos de seguridad; de hecho, como hace peticiones al servidor desde JavaScript, obliga a cuidar bien cosas como permisos, sesiones, tokens CSRF, validacion de datos y respuestas que no expongan informacion sensible. Aunque el usuario no vea una recarga completa, sigue siendo una peticion HTTP real y alguien podria intentar modificarla desde el navegador o desde otra herramienta.</p>
+            <p>Las validaciones importantes siempre deben hacerse del lado del servidor, porque el cliente se puede manipular. Validar en el cliente ayuda a dar una mejor experiencia al usuario, por ejemplo avisando rapido si falta un campo, pero la seguridad real debe estar en el servidor antes de guardar, borrar o consultar informacion.</p>
+        </div>
+
+        <div class="panel">
+            <h2>8. JSON</h2>
+            <p>JSON es un formato de texto para representar datos de manera estructurada. Se usa mucho en aplicaciones web porque JavaScript lo puede leer y construir facilmente, y porque tambien lo entienden servidores hechos con otros lenguajes.</p>
+            <p>En lugar de que el servidor mande una pagina HTML completa, puede mandar datos como el mensaje de respuesta, el promedio del libro y las resenas. Luego el JavaScript del cliente usa esos datos para actualizar la pantalla.</p>
+        </div>
+    </div>
+</body>
+</html>

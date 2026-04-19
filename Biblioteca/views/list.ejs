@@ -16,6 +16,7 @@
         .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 14px; color: white; white-space: nowrap; }
         .btn-add { background: #27ae60; }
         .btn-view { background: #3498db; }
+        .btn-info { background: #16a085; }
         .btn-edit { background: #f39c12; }
         .btn-delete { background: #e74c3c; }
         .btn-logout { background: #2c3e50; }
@@ -48,6 +49,7 @@
                 <span class="roles">Roles: <%= currentRoles.length ? currentRoles.join(', ') : 'sin rol' %></span>
             </p>
             <div class="topbar-actions">
+                <a href="/preguntas" class="btn btn-info">Preguntas y AJAX</a>
                 <% if (hasPermission('libros:create')) { %>
                     <a href="/add" class="btn btn-add">Agregar libro</a>
                 <% } %>

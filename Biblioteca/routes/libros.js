@@ -7,6 +7,7 @@ const hasPermission = require('../middleware/has-permission');
 router.use(isAuth);
 
 router.get('/', hasPermission('libros:read'), librosController.getLibros);
+router.get('/preguntas', hasPermission('libros:read'), librosController.getPreguntas);
 router.get('/add', hasPermission('libros:create'), librosController.getAdd);
 router.post('/add', hasPermission('libros:create'), librosController.postAdd);
 router.get('/libro/:libro_id', hasPermission('libros:read'), librosController.getDetalle);

@@ -23,3 +23,15 @@ La ventaja es que el control de acceso es más seguro y organizado, además de f
 Por otro lado, un sistema sin RBAC sería una aplicación simple donde todos los usuarios tienen los mismos permisos, como un blog básico.
 La ventaja es que es fácil de implementar, pero la desventaja es que el control de acceso es débil, ya que cualquier usuario puede realizar acciones sensibles.
 En conclusión, RBAC es mejor para sistemas más grandes o con información importante, mientras que sin RBAC solo es viable en aplicaciones muy simples.
+
+6. ¿Qué importancia tiene AJAX en el desarrollo de RIA's (Rich Internet Applications)?
+AJAX es importante en las RIA porque permite que una página se comunique con el servidor sin tener que recargarse completa cada vez que el usuario hace algo. Eso hace que la aplicación se sienta más rápida y fluida, casi como una aplicación de escritorio, porque solo se actualiza la parte necesaria de la interfaz.
+En esta biblioteca se nota con las reseñas: el usuario guarda su comentario, el servidor responde con datos JSON y la página actualiza la calificación y la lista de reseñas sin perder el contexto donde estaba.
+
+7. ¿Qué implicaciones de seguridad tiene AJAX? ¿Dónde se deben hacer las validaciones de seguridad, del lado del cliente o del lado del servidor?
+AJAX no elimina los riesgos de seguridad; de hecho, como hace peticiones al servidor desde JavaScript, obliga a cuidar bien cosas como permisos, sesiones, tokens CSRF, validación de datos y respuestas que no expongan información sensible. Aunque el usuario no vea una recarga completa, sigue siendo una petición HTTP real y alguien podría intentar modificarla desde el navegador o desde otra herramienta.
+Las validaciones importantes siempre deben hacerse del lado del servidor, porque el cliente se puede manipular. Validar en el cliente ayuda a dar una mejor experiencia al usuario, por ejemplo avisando rápido si falta un campo, pero la seguridad real debe estar en el servidor antes de guardar, borrar o consultar información.
+
+8. ¿Qué es JSON?
+JSON es un formato de texto para representar datos de manera estructurada. Se usa mucho en aplicaciones web porque JavaScript lo puede leer y construir fácilmente, y porque también lo entienden servidores hechos con otros lenguajes.
+En lugar de que el servidor mande una página HTML completa, puede mandar datos como el mensaje de respuesta, el promedio del libro y las reseñas. Luego el JavaScript del cliente usa esos datos para actualizar la pantalla.
