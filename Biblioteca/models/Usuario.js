@@ -9,14 +9,17 @@ module.exports = class Usuario {
 
     async save() {
         const hashedPassword = await bcrypt.hash(this.password, 12);
-        const [result] = await db.execute(
-            'INSERT INTO usuarios (username, password) VALUES (?, ?)',
-            [this.username, hashedPassword]
-        );
 
-        await Usuario.assignDefaultRole(result.insertId);
+        return db.withTransaction(async connection => {
+            const [result] = await connection.execute(
+                'INSERT INTO usuarios (username, password) VALUES (?, ?)',
+                [this.username, hashedPassword]
+            );
 
-        return result;
+            await Usuario.assignDefaultRole(result.insertId, connection);
+
+            return result;
+        });
     }
 
     static findById(id) {
@@ -27,8 +30,8 @@ module.exports = class Usuario {
         return db.execute('SELECT * FROM usuarios WHERE username = ?', [username]);
     }
 
-    static assignDefaultRole(usuarioId) {
-        return db.execute(
+    static assignDefaultRole(usuarioId, connection = db) {
+        return connection.execute(
             `INSERT IGNORE INTO usuarios_roles (usuario_id, rol_id)
              SELECT ?, id FROM roles WHERE nombre = 'usuario'`,
             [usuarioId]

@@ -10,4 +10,22 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
-module.exports = pool.promise();
+const db = pool.promise();
+
+db.withTransaction = async callback => {
+    const connection = await db.getConnection();
+
+    try {
+        await connection.beginTransaction();
+        const result = await callback(connection);
+        await connection.commit();
+        return result;
+    } catch (error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
+    }
+};
+
+module.exports = db;
