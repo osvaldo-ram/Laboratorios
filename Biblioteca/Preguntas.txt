@@ -35,3 +35,8 @@ Las validaciones importantes siempre deben hacerse del lado del servidor, porque
 8. ¿Qué es JSON?
 JSON es un formato de texto para representar datos de manera estructurada. Se usa mucho en aplicaciones web porque JavaScript lo puede leer y construir fácilmente, y porque también lo entienden servidores hechos con otros lenguajes.
 En lugar de que el servidor mande una página HTML completa, puede mandar datos como el mensaje de respuesta, el promedio del libro y las reseñas. Luego el JavaScript del cliente usa esos datos para actualizar la pantalla.
+
+
+9, ¿Qué ventajas y desventajas tiene la integración de tus aplicaciones web con servicios web desarrollados por terceros?
+Una ventaja de integrar servicios web de terceros es que no tienes que hacer todo desde cero. Por ejemplo, en esta biblioteca se usa una API para buscar libros y traer datos como título, autor, año, género y portada. Eso hace que registrar un libro sea más rápido y que el usuario no tenga que escribir tanta información a mano.
+También ayuda a que la aplicación se sienta más completa, porque aprovecha información que ya existe en otros servicios. La desventaja es que dependes de ese servicio externo. Si la API se cae, cambia sus reglas, limita las peticiones o pide una llave, esa parte de la app puede fallar. Por eso en este proyecto se maneja el error de Google Books y se usa Open Library como respaldo.

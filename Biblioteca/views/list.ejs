@@ -84,7 +84,7 @@
                         <tr>
                             <td data-label="Portada">
                                 <% if (libro.imagen) { %>
-                                    <img class="cover-thumb" src="/<%= libro.imagen %>" alt="Portada de <%= libro.titulo %>">
+                                    <img class="cover-thumb" src="<%= imageSrc(libro.imagen) %>" alt="Portada de <%= libro.titulo %>">
                                 <% } else { %>
                                     <div class="cover-placeholder">Sin<br>portada</div>
                                 <% } %>

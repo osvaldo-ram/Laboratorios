@@ -62,7 +62,7 @@
                 <label>Portada:</label>
                 <% if (libro.imagen) { %>
                     <div class="current-cover">
-                        <img src="/<%= libro.imagen %>" alt="Portada de <%= libro.titulo %>">
+                        <img src="<%= imageSrc(libro.imagen) %>" alt="Portada de <%= libro.titulo %>">
                     </div>
                 <% } else { %>
                     <p class="hint">Este libro aun no tiene portada.</p>

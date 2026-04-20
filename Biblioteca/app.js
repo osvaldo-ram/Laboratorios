@@ -63,6 +63,13 @@ app.use((request, response, next) => {
     response.locals.currentRoles = user && Array.isArray(user.roles) ? user.roles : [];
     response.locals.currentPermissions = permissions;
     response.locals.hasPermission = permission => permissions.includes(permission);
+    response.locals.imageSrc = image => {
+        if (!image) {
+            return '';
+        }
+
+        return /^https?:\/\//i.test(image) ? image : `/${image.replace(/^\/+/, '')}`;
+    };
     response.locals.csrfToken = request.csrfToken();
     next();
 });

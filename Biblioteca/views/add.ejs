@@ -14,12 +14,27 @@
         .topbar-actions { display: flex; gap: 10px; align-items: center; }
         .container { max-width: 520px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         h1 { margin-bottom: 20px; color: #2c3e50; }
+        h2 { margin-bottom: 12px; color: #2c3e50; font-size: 20px; }
         label { display: block; margin-top: 15px; font-weight: bold; color: #555; }
         input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
         .hint { color: #7f8c8d; font-size: 13px; margin-top: 6px; }
         button { margin-top: 20px; padding: 12px 24px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
+        button:disabled { cursor: not-allowed; opacity: 0.65; }
         .logout-btn { margin-top: 0; padding: 8px 16px; font-size: 14px; background: #2c3e50; }
         .message { border-radius: 6px; padding: 12px 14px; margin-bottom: 16px; background: #fdecea; color: #b03a2e; }
+        .message.success { background: #e9f7ef; color: #1f7a43; }
+        .api-search { border: 1px solid #dde6ee; border-radius: 8px; padding: 18px; margin-bottom: 22px; background: #f8fbfd; }
+        .api-search button { margin-top: 10px; background: #3498db; }
+        .results { display: grid; gap: 12px; margin-top: 16px; }
+        .book-result { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 12px; padding: 12px; border: 1px solid #e1e7ed; border-radius: 8px; background: white; }
+        .book-result img, .cover-empty { width: 70px; height: 96px; border-radius: 6px; border: 1px solid #ddd; object-fit: cover; background: #eef2f7; }
+        .cover-empty { display: flex; align-items: center; justify-content: center; color: #7f8c8d; font-size: 12px; text-align: center; }
+        .book-result h3 { color: #2c3e50; font-size: 16px; margin-bottom: 4px; }
+        .book-result p { color: #555; font-size: 14px; line-height: 1.4; margin-top: 4px; }
+        .book-result .use-book { margin-top: 10px; padding: 8px 14px; font-size: 14px; }
+        @media (max-width: 620px) {
+            .book-result { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -42,28 +57,166 @@
                 <div class="message"><%= errorMessage %></div>
             <% } %>
 
+            <div class="api-search">
+                <h2>Buscar en servicios de libros</h2>
+                <p class="hint">Busca un libro y usa los datos de Google Books u Open Library para llenar el formulario.</p>
+                <label for="google-books-query">Titulo o autor:</label>
+                <input type="text" id="google-books-query" placeholder="Ejemplo: 1984 George Orwell">
+                <button type="button" id="google-books-button">Buscar libro</button>
+                <div id="google-books-status" class="message" aria-live="polite" hidden></div>
+                <div id="google-books-results" class="results"></div>
+            </div>
+
             <form action="/add" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" id="imagenExterna" name="imagenExterna">
 
-                <label>Titulo:</label>
-                <input type="text" name="titulo" required>
+                <label for="titulo">Titulo:</label>
+                <input type="text" id="titulo" name="titulo" required>
 
-                <label>Autor:</label>
-                <input type="text" name="autor" required>
+                <label for="autor">Autor:</label>
+                <input type="text" id="autor" name="autor" required>
 
-                <label>Genero:</label>
-                <input type="text" name="genero">
+                <label for="genero">Genero:</label>
+                <input type="text" id="genero" name="genero">
 
-                <label>Anio de publicacion:</label>
-                <input type="number" name="anio">
+                <label for="anio">Anio de publicacion:</label>
+                <input type="number" id="anio" name="anio">
 
-                <label>Portada:</label>
-                <input type="file" name="archivo" accept="image/png,image/jpg,image/jpeg">
-                <p class="hint">Formatos permitidos: PNG, JPG o JPEG. Maximo 2 MB.</p>
+                <label for="archivo">Portada:</label>
+                <input type="file" id="archivo" name="archivo" accept="image/png,image/jpg,image/jpeg">
+                <p class="hint">Formatos permitidos: PNG, JPG o JPEG. Maximo 2 MB. Si subes una imagen, reemplaza la portada tomada de Google Books.</p>
 
                 <button type="submit">Guardar Libro</button>
             </form>
         </div>
     </div>
+
+    <script>
+        (() => {
+            const queryInput = document.getElementById('google-books-query');
+            const searchButton = document.getElementById('google-books-button');
+            const statusBox = document.getElementById('google-books-status');
+            const resultsBox = document.getElementById('google-books-results');
+            const fields = {
+                titulo: document.getElementById('titulo'),
+                autor: document.getElementById('autor'),
+                genero: document.getElementById('genero'),
+                anio: document.getElementById('anio'),
+                imagenExterna: document.getElementById('imagenExterna')
+            };
+
+            const setStatus = (message, type) => {
+                statusBox.hidden = !message;
+                statusBox.textContent = message;
+                statusBox.classList.toggle('success', type === 'success');
+            };
+
+            const fillForm = book => {
+                fields.titulo.value = book.titulo || '';
+                fields.autor.value = book.autor || '';
+                fields.genero.value = book.genero || '';
+                fields.anio.value = book.anio || '';
+                fields.imagenExterna.value = book.imagen || '';
+                setStatus('Datos copiados al formulario. Revisa la informacion antes de guardar.', 'success');
+            };
+
+            const createResult = book => {
+                const result = document.createElement('div');
+                result.className = 'book-result';
+
+                if (book.imagen) {
+                    const cover = document.createElement('img');
+                    cover.src = book.imagen;
+                    cover.alt = `Portada de ${book.titulo}`;
+                    result.append(cover);
+                } else {
+                    const cover = document.createElement('div');
+                    cover.className = 'cover-empty';
+                    cover.textContent = 'Sin portada';
+                    result.append(cover);
+                }
+
+                const body = document.createElement('div');
+
+                const title = document.createElement('h3');
+                title.textContent = book.titulo;
+
+                const author = document.createElement('p');
+                author.textContent = book.autor || 'Autor no disponible';
+
+                const meta = document.createElement('p');
+                meta.textContent = [book.anio, book.genero].filter(Boolean).join(' - ') || 'Sin datos adicionales';
+
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'use-book';
+                button.textContent = 'Usar estos datos';
+                button.addEventListener('click', () => fillForm(book));
+
+                body.append(title, author, meta, button);
+                result.append(body);
+                return result;
+            };
+
+            const renderResults = books => {
+                resultsBox.replaceChildren();
+
+                books.forEach(book => {
+                    resultsBox.append(createResult(book));
+                });
+            };
+
+            const searchBooks = async () => {
+                const query = queryInput.value.trim();
+
+                if (query.length < 2) {
+                    setStatus('Escribe al menos 2 caracteres para buscar.', 'error');
+                    resultsBox.replaceChildren();
+                    return;
+                }
+
+                searchButton.disabled = true;
+                setStatus('Buscando libros en servicios web...', 'loading');
+                resultsBox.replaceChildren();
+
+                try {
+                    const result = await fetch(`/api/google-books?q=${encodeURIComponent(query)}`, {
+                        headers: {
+                            Accept: 'application/json'
+                        }
+                    });
+                    const data = await result.json().catch(() => ({}));
+
+                    if (!result.ok) {
+                        throw new Error(data.message || 'No se pudo consultar Google Books.');
+                    }
+
+                    if (!data.books || data.books.length === 0) {
+                        setStatus('No se encontraron libros con esa busqueda.', 'error');
+                        return;
+                    }
+
+                    renderResults(data.books);
+
+                    const source = data.source ? ` en ${data.source}` : '';
+                    const fallbackMessage = data.message ? `${data.message} ` : '';
+                    setStatus(`${fallbackMessage}Se encontraron ${data.books.length} resultados${source}.`, 'success');
+                } catch (error) {
+                    setStatus(error.message, 'error');
+                } finally {
+                    searchButton.disabled = false;
+                }
+            };
+
+            searchButton.addEventListener('click', searchBooks);
+            queryInput.addEventListener('keydown', event => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    searchBooks();
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

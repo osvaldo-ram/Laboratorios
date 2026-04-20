@@ -1,8 +1,118 @@
 const Libro = require('../models/Libro');
 const Resena = require('../models/Resena');
 
+const GOOGLE_BOOKS_API_URL = 'https://www.googleapis.com/books/v1/volumes';
+const OPEN_LIBRARY_API_URL = 'https://openlibrary.org/search.json';
+
 const wantsJson = request => {
     return request.is('application/json') || (request.get('accept') || '').includes('application/json');
+};
+
+const parsePublishedYear = publishedDate => {
+    const year = Number.parseInt(String(publishedDate || '').slice(0, 4), 10);
+    return Number.isInteger(year) ? year : '';
+};
+
+const normalizeImageUrl = imageUrl => {
+    if (!imageUrl) {
+        return '';
+    }
+
+    return String(imageUrl).replace(/^http:\/\//i, 'https://');
+};
+
+const getHttpUrl = value => {
+    try {
+        const url = new URL(String(value || '').trim());
+        return url.protocol === 'http:' || url.protocol === 'https:' ? normalizeImageUrl(url.toString()) : null;
+    } catch (error) {
+        return null;
+    }
+};
+
+const mapGoogleBook = item => {
+    const volumeInfo = item.volumeInfo || {};
+    const authors = Array.isArray(volumeInfo.authors) ? volumeInfo.authors.join(', ') : '';
+    const categories = Array.isArray(volumeInfo.categories) ? volumeInfo.categories.join(', ') : '';
+    const imageLinks = volumeInfo.imageLinks || {};
+
+    return {
+        id: item.id,
+        titulo: volumeInfo.title || '',
+        autor: authors,
+        genero: categories,
+        anio: parsePublishedYear(volumeInfo.publishedDate),
+        imagen: normalizeImageUrl(imageLinks.thumbnail || imageLinks.smallThumbnail || ''),
+        descripcion: volumeInfo.description || ''
+    };
+};
+
+const mapOpenLibraryBook = item => {
+    const authors = Array.isArray(item.author_name) ? item.author_name.join(', ') : '';
+    const subjects = Array.isArray(item.subject) ? item.subject.slice(0, 3).join(', ') : '';
+    const isbn = Array.isArray(item.isbn) ? item.isbn[0] : '';
+    const image = item.cover_i
+        ? `https://covers.openlibrary.org/b/id/${item.cover_i}-M.jpg`
+        : isbn
+            ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`
+            : '';
+
+    return {
+        id: item.key,
+        titulo: item.title || '',
+        autor: authors,
+        genero: subjects,
+        anio: item.first_publish_year || '',
+        imagen: image,
+        descripcion: ''
+    };
+};
+
+const fetchWithTimeout = async url => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
+
+    try {
+        return await fetch(url, {
+            headers: {
+                Accept: 'application/json',
+                'User-Agent': 'Biblioteca-Lab26/1.0'
+            },
+            signal: controller.signal
+        });
+    } finally {
+        clearTimeout(timeout);
+    }
+};
+
+const searchOpenLibrary = async query => {
+    const url = new URL(OPEN_LIBRARY_API_URL);
+    url.searchParams.set('q', query);
+    url.searchParams.set('limit', '5');
+    url.searchParams.set('fields', 'key,title,author_name,first_publish_year,cover_i,subject,isbn');
+
+    const apiResponse = await fetchWithTimeout(url);
+
+    if (!apiResponse.ok) {
+        throw new Error('Open Library no respondio correctamente.');
+    }
+
+    const data = await apiResponse.json();
+
+    return (data.docs || [])
+        .map(mapOpenLibraryBook)
+        .filter(book => book.titulo && book.autor);
+};
+
+const respondWithOpenLibraryFallback = async (query, response) => {
+    const books = await searchOpenLibrary(query);
+
+    return response.json({
+        books,
+        source: 'Open Library',
+        fallback: true,
+        message: 'Google Books alcanzo su cuota publica; se muestran resultados de Open Library.'
+    });
 };
 
 const getDetalleData = async libroId => {
@@ -57,13 +167,65 @@ exports.getAdd = (request, response, next) => {
     response.render('add');
 };
 
+exports.searchGoogleBooks = async (request, response) => {
+    const query = (request.query.q || '').trim();
+
+    if (query.length < 2) {
+        return response.status(422).json({
+            message: 'Escribe al menos 2 caracteres para buscar libros.'
+        });
+    }
+
+    const url = new URL(GOOGLE_BOOKS_API_URL);
+    url.searchParams.set('q', query);
+    url.searchParams.set('maxResults', '5');
+    url.searchParams.set('printType', 'books');
+    url.searchParams.set('projection', 'lite');
+
+    if (process.env.GOOGLE_BOOKS_API_KEY) {
+        url.searchParams.set('key', process.env.GOOGLE_BOOKS_API_KEY);
+    }
+
+    try {
+        const apiResponse = await fetchWithTimeout(url);
+
+        if (apiResponse.status === 429) {
+            return respondWithOpenLibraryFallback(query, response);
+        }
+
+        if (!apiResponse.ok) {
+            return respondWithOpenLibraryFallback(query, response);
+        }
+
+        const data = await apiResponse.json();
+        const books = (data.items || [])
+            .map(mapGoogleBook)
+            .filter(book => book.titulo && book.autor);
+
+        return response.json({
+            books,
+            source: 'Google Books'
+        });
+    } catch (error) {
+        try {
+            return await respondWithOpenLibraryFallback(query, response);
+        } catch (fallbackError) {
+            const status = error.name === 'AbortError' ? 504 : 500;
+            return response.status(status).json({
+                message: 'No se pudo consultar Google Books ni Open Library en este momento.'
+            });
+        }
+    }
+};
+
 exports.postAdd = async (request, response, next) => {
     try {
         const titulo = (request.body.titulo || '').trim();
         const autor = (request.body.autor || '').trim();
         const genero = (request.body.genero || '').trim();
         const anio = request.body.anio || null;
-        const imagen = request.file ? `uploads/${request.file.filename}` : null;
+        const imagenExterna = getHttpUrl(request.body.imagenExterna);
+        const imagen = request.file ? `uploads/${request.file.filename}` : imagenExterna;
 
         if (!titulo || !autor) {
             return response.status(422).render('add', {
